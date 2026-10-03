@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel da Cozinha - Padoca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#15100d; --panel:#1e1712; --panel-2:#251c16; --border:#37291f;
+  --cream:#f7ecdc; --text:#f4ece0; --text-muted:#a99b8a;
+  --tomato:#d3491f; --tomato-dark:#a83a19; --gold:#e2a53e;
+  --green:#20895f; --red:#b3261e; --blue:#3b7dd8;
+  --radius-lg:20px; --radius-md:14px; --radius-sm:10px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;-webkit-font-smoothing:antialiased;}
+h1,h2,h3,.display{font-family:'Fraunces',serif;}
+.hidden{display:none !important;}
+body{padding:26px 22px 60px;}
+
+/* LOGIN */
+.login-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:2000;padding:24px;}
+.login-mark{font-size:14px;letter-spacing:.14em;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:8px;}
+.login-title{font-size:26px;font-weight:700;color:var(--cream);margin:0 0 22px;}
+input[type="password"],input[type="text"]{
+  padding:14px 16px;width:270px;font-size:16px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:#120d0a;color:var(--text);box-sizing:border-box;outline:none;
+}
+input[type="password"]{text-align:center;margin-bottom:14px;}
+.btn{border:none;border-radius:var(--radius-sm);font-family:inherit;font-weight:700;cursor:pointer;transition:transform .08s;}
+.btn:active{transform:scale(.97);}
+.btn-login{padding:14px 34px;background:linear-gradient(155deg,var(--gold),#c98a2a);color:#241a10;font-size:15.5px;margin-top:6px;}
+
+/* HEADER */
+.top-header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:26px;}
+.brand-mark{font-size:13.5px;letter-spacing:.14em;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:6px;}
+.page-title{font-size:30px;font-weight:700;color:var(--cream);margin:0;}
+
+.controls-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:28px;}
+.control-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 18px;display:flex;align-items:center;gap:12px;}
+.control-label{font-size:12.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;}
+.status-pill{padding:10px 20px;border-radius:30px;font-weight:700;font-size:14px;border:none;cursor:pointer;}
+.status-pill.online{background:var(--green);color:#fff;}
+.status-pill.offline{background:var(--red);color:#fff;}
+.promo-card{flex:1;min-width:280px;}
+.promo-card input{flex:1;padding:10px 12px;font-size:14.5px;}
+.btn-save{padding:10px 18px;background:var(--gold);color:#241a10;font-size:13.5px;white-space:nowrap;}
+
+/* GRID DE PEDIDOS */
+.grid-pedidos{display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:18px;}
+.empty-state{color:var(--text-muted);font-size:15px;grid-column:1/-1;padding:30px 0;text-align:center;}
+
+.pedido-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:0 14px 30px rgba(0,0,0,.35);display:flex;flex-direction:column;justify-content:space-between;}
+.pedido-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:12px;}
+.pedido-head h3{margin:0;font-size:19px;color:var(--gold);}
+.badge{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:700;white-space:nowrap;}
+.badge-alta{background:rgba(32,137,95,.18);color:#4fd39a;}
+.badge-media{background:rgba(226,165,62,.18);color:var(--gold);}
+.badge-baixa{background:rgba(179,38,30,.18);color:#f19893;}
+.badge-completo{background:rgba(226,165,62,.18);color:var(--gold);}
+.badge-simples{background:rgba(255,255,255,.06);color:var(--text-muted);}
+
+.info-line{margin:7px 0;font-size:14px;color:var(--text-muted);line-height:1.45;}
+.info-line b{color:var(--text);font-weight:700;}
+.info-highlight{color:var(--gold);font-weight:700;}
+.status-line{text-transform:uppercase;font-weight:800;font-size:12.5px;letter-spacing:.04em;color:var(--gold);}
+.total-line{color:var(--green);font-size:22px;font-weight:800;font-family:'Fraunces',serif;margin:16px 0 0;}
+
+.btn-actions{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+.btn-row{display:flex;gap:8px;}
+.btn-print{background:var(--blue);color:#fff;padding:12px;font-size:13.5px;flex:1;border-radius:var(--radius-sm);}
+.btn-accept{background:var(--green);color:#fff;padding:12px;font-size:13.5px;flex:1;border-radius:var(--radius-sm);}
+.btn-refuse{background:var(--red);color:#fff;padding:12px;font-size:13.5px;flex:1;border-radius:var(--radius-sm);}
+.btn-dispatch{background:var(--green-dark, #166a49);color:#fff;padding:12px;font-size:13.5px;border-radius:var(--radius-sm);}
+.btn-remove{background:#4b4038;color:#fff;padding:12px;font-size:13.5px;border-radius:var(--radius-sm);}
+.refused-note{color:#f19893;font-weight:700;text-align:center;font-size:13.5px;margin:6px 0;}
+
+/* DISPONIBILIDADE DAS PIZZAS */
+.secao-disponibilidade{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px 18px;margin-bottom:28px;}
+.grade-disponibilidade{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px;}
+.chip-sabor{background:var(--panel-2,#251c16);border:1px solid var(--border);padding:9px 15px;border-radius:30px;font-size:13.5px;font-weight:700;color:var(--text);cursor:pointer;transition:all .12s;}
+.chip-sabor:hover{border-color:var(--gold);}
+.chip-sabor.indisponivel{background:rgba(179,38,30,.18);border-color:var(--red);color:#f19893;text-decoration:line-through;}
+
+@media print {
+  body{background:#fff;color:#000;padding:0;margin:0;}
+  #login-block,#painel-conteudo{display:none !important;}
+  #cupom-impressao{display:block !important;width:80mm;font-family:'Manrope',sans-serif;font-size:26px !important;font-weight:900 !important;color:#000;line-height:1.3;word-wrap:break-word;}
+  #cupom-impressao p, #cupom-impressao div{font-size:26px !important;font-weight:900 !important;color:#000 !important;}
+}
+</style>
+</head>
+<body>
+
+<div id="login-block" class="login-screen">
+  <div class="login-mark">Painel interno</div>
+  <h2 class="login-title">Acesso da cozinha</h2>
+  <input type="password" id="senha" placeholder="Digite a senha"><br>
+  <button class="btn btn-login" onclick="verificarSenha()">Acessar painel</button>
+</div>
+
+<div id="painel-conteudo" class="hidden">
+  <div class="top-header">
+    <div>
+      <div class="brand-mark">Padoca disk pizzas</div>
+      <h1 class="page-title">Pedidos em tempo real</h1>
+    </div>
+  </div>
+
+  <div class="controls-row">
+    <div class="control-card">
+      <span class="control-label">Loja virtual</span>
+      <button id="btn-toggle-status" class="status-pill online" onclick="alternarStatusSite()">Online (aberto)</button>
+    </div>
+    <div class="control-card promo-card">
+      <span class="control-label">Promoção do dia</span>
+      <input type="text" id="input-promo-texto" placeholder="Carregando promoção...">
+      <button class="btn btn-save" onclick="salvarPromocao()">Salvar</button>
+    </div>
+  </div>
+
+  <div class="secao-disponibilidade">
+    <span class="control-label">Disponibilidade das pizzas &middot; clique para marcar/desmarcar como indisponível</span>
+    <div class="grade-disponibilidade" id="grade-disponibilidade"></div>
+  </div>
+
+  <div class="grid-pedidos" id="lista-pedidos"></div>
+</div>
+
+<div id="cupom-impressao" class="hidden"></div>
+
+<script>
+let statusSite = true;
+let ultimoIdVisto = null; // null = ainda não carregou a primeira vez (não imprime pedidos antigos)
+
+// ==========================================
+// 🔔 Áudio persistente: toca mesmo com a aba minimizada ou em segundo plano
+// ==========================================
+let audioCtx = null;
+
+function iniciarAudioPersistente() {
+  if (audioCtx) {
+    if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+    return;
+  }
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Oscilador quase inaudível tocando sem parar: o navegador trata a aba como
+    // "reproduzindo áudio" e NÃO pausa os timers quando ela está minimizada/oculta —
+    // é por isso que antes o aviso só tocava com a aba aberta e em foco.
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    gain.gain.value = 0.0001;
+    osc.frequency.value = 20;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+  } catch (e) { console.log("Áudio aguardando interação do usuário."); }
+}
+
+// Qualquer clique/toque já destrava o áudio, sem precisar esperar o login
+document.addEventListener('click', iniciarAudioPersistente, { once: true });
+document.addEventListener('keydown', iniciarAudioPersistente, { once: true });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) iniciarAudioPersistente(); });
+
+function tocarSomNotificacao() {
+  iniciarAudioPersistente();
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+  const bipar = (delay) => setTimeout(() => {
+    for (let i = 0; i < 2; i++) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(950, audioCtx.currentTime);
+      gain.gain.setValueAtTime(2.0, audioCtx.currentTime);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.30);
+    }
+  }, delay);
+  bipar(0);
+  bipar(250);
+}
+
+// ==========================================
+// 🔔 Notificação de verdade via Service Worker (Web Push):
+// diferente do beep e do Notification() direto, isso roda fora da aba —
+// funciona com o painel minimizado, em outra aba, ou até com a janela
+// fechada (desde que o navegador continue aberto). Precisa do pacote
+// "web-push" instalado no servidor (veja o aviso no console do servidor).
+// ==========================================
+function base64ParaUint8Array(base64) {
+  const padding = '='.repeat((4 - (base64.length % 4)) % 4);
+  const base64Seguro = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const bruto = atob(base64Seguro);
+  return Uint8Array.from([...bruto].map(c => c.charCodeAt(0)));
+}
+
+async function ativarNotificacaoDoSistema() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+    console.log("Este navegador não suporta notificações em segundo plano.");
+    return;
+  }
+  try {
+    if (Notification.permission === 'default') await Notification.requestPermission();
+    if (Notification.permission !== 'granted') return;
+
+    const registro = await navigator.serviceWorker.register('/sw.js');
+    await navigator.serviceWorker.ready;
+
+    const inscricaoExistente = await registro.pushManager.getSubscription();
+    if (inscricaoExistente) return; // já está inscrito neste navegador
+
+    const resChave = await fetch(`${window.location.origin}/api/push/chave-publica`);
+    if (!resChave.ok) { console.log("Servidor sem 'web-push' instalado — só o beep dentro da aba vai funcionar."); return; }
+    const { chave } = await resChave.json();
+
+    const inscricao = await registro.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: base64ParaUint8Array(chave)
+    });
+
+    await fetch(`${window.location.origin}/api/push/inscrever`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(inscricao)
+    });
+  } catch (e) { console.log("Não foi possível ativar a notificação em segundo plano:", e.message); }
+}
+
+document.addEventListener('input', function (e) {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    const limpo = e.target.value.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu, '');
+    if (e.target.value !== limpo) e.target.value = limpo;
+  }
+});
+
+if (localStorage.getItem('padoca_auth') === 'true') { liberarPainel(); }
+
+function verificarSenha() {
+  if (document.getElementById('senha').value === "Padoca") {
+    localStorage.setItem('padoca_auth', 'true');
+    liberarPainel();
+  } else { alert("Senha incorreta."); }
+}
+
+async function liberarPainel() {
+  document.getElementById('login-block').classList.add('hidden');
+  document.getElementById('painel-conteudo').classList.remove('hidden');
+  iniciarAudioPersistente();
+  ativarNotificacaoDoSistema();
+
+  const res = await fetch(`${window.location.origin}/api/status`);
+  const data = await res.json();
+  statusSite = data.online;
+  atualizarBotaoStatus();
+
+  const resPromo = await fetch(`${window.location.origin}/api/promocao`);
+  const dataPromo = await resPromo.json();
+  document.getElementById('input-promo-texto').value = dataPromo.texto;
+
+  carregarDisponibilidade();
+
+  atualizarPedidos();
+  setInterval(atualizarPedidos, 3000);
+}
+
+// ==========================================
+// 🚫 Disponibilidade das pizzas (marca/desmarca indisponível, some do index.html)
+// ==========================================
+let cardapioCompleto = [];
+let indisponiveisIds = [];
+
+async function carregarDisponibilidade() {
+  // Busca o cardápio e a lista de indisponíveis separados: assim, se o servidor
+  // ainda não tiver sido reiniciado com a rota nova (/api/indisponiveis), as
+  // pizzas aparecem do mesmo jeito (só a marcação de indisponível fica pendente).
+  try {
+    const resCardapio = await fetch(`${window.location.origin}/api/cardapio`);
+    cardapioCompleto = await resCardapio.json();
+  } catch (e) {
+    console.log("Erro ao carregar o cardápio.");
+    document.getElementById('grade-disponibilidade').innerHTML = "<span style='color:var(--text-muted);font-size:13.5px;'>Não foi possível carregar as pizzas. Veja se o server.js está rodando.</span>";
+    return;
+  }
+
+  try {
+    const resIndisp = await fetch(`${window.location.origin}/api/indisponiveis`);
+    if (!resIndisp.ok) throw new Error('rota ainda não existe no servidor');
+    indisponiveisIds = await resIndisp.json();
+  } catch (e) {
+    indisponiveisIds = [];
+    console.log("Rota /api/indisponiveis indisponível — reinicie o server.js atualizado para ativar a marcação.");
+  }
+
+  renderizarGradeDisponibilidade();
+}
+
+function renderizarGradeDisponibilidade() {
+  const container = document.getElementById('grade-disponibilidade');
+  container.innerHTML = cardapioCompleto.map(p => `
+    <button type="button" class="chip-sabor ${indisponiveisIds.includes(p.id) ? 'indisponivel' : ''}" onclick="alternarDisponibilidade(${p.id})">${p.nome}</button>
+  `).join('');
+}
+
+async function alternarDisponibilidade(id) {
+  try {
+    const res = await fetch(`${window.location.origin}/api/indisponiveis/alternar`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id })
+    });
+    if (!res.ok) throw new Error('rota ainda não existe no servidor');
+    const data = await res.json();
+    if (data.success) {
+      indisponiveisIds = data.indisponiveis;
+      renderizarGradeDisponibilidade();
+    }
+  } catch (e) { alert("Não deu pra marcar essa pizza. Reinicie o server.js (o arquivo mais novo) e tente de novo."); }
+}
+
+async function alternarStatusSite() {
+  statusSite = !statusSite;
+  await fetch(`${window.location.origin}/api/status`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ online: statusSite })
+  });
+  atualizarBotaoStatus();
+}
+
+function atualizarBotaoStatus() {
+  const btn = document.getElementById('btn-toggle-status');
+  if (statusSite) { btn.innerText = "Online (aberto)"; btn.className = "status-pill online"; }
+  else { btn.innerText = "Fechado (site oculto)"; btn.className = "status-pill offline"; }
+}
+
+async function salvarPromocao() {
+  const texto = document.getElementById('input-promo-texto').value.trim();
+  await fetch(`${window.location.origin}/api/promocao`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ texto })
+  });
+  alert("Promoção atualizada com sucesso!");
+}
+
+async function mudarStatusPedido(id, status, motivoRecusa = '') {
+  await fetch(`${window.location.origin}/api/pedidos/status`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status, motivoRecusa })
+  });
+  atualizarPedidos();
+}
+
+async function darBaixa(id) {
+  await fetch(`${window.location.origin}/api/pedidos/concluir`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id })
+  });
+  atualizarPedidos();
+}
+
+function classeSegurancaDe(txt) {
+  if (!txt) return 'badge-media';
+  if (txt.startsWith('Alta')) return 'badge-alta';
+  if (txt.startsWith('Baixa')) return 'badge-baixa';
+  return 'badge-media';
+}
+
+async function atualizarPedidos() {
+  const res = await fetch(`${window.location.origin}/api/pedidos`);
+  const pedidos = await res.json();
+
+  const maiorId = pedidos.reduce((m, p) => Math.max(m, p.id), 0);
+  if (ultimoIdVisto !== null && maiorId > ultimoIdVisto) {
+    const novoPedido = pedidos.find(p => p.id === maiorId);
+    tocarSomNotificacao();   // beep imediato se a aba estiver aberta e em foco
+    const dadosTextoStr = encodeURIComponent(JSON.stringify(novoPedido));
+    setTimeout(() => { imprimirCupomDuplo(dadosTextoStr); }, 500);
+  }
+  ultimoIdVisto = maiorId;
+
+  // Pedidos já despachados/removidos saem da fila (continuam no histórico do clientes.html)
+  const fila = pedidos.filter(p => p.status !== 'concluido');
+
+  const container = document.getElementById('lista-pedidos');
+  if (fila.length === 0) {
+    container.innerHTML = "<p class='empty-state'>Aguardando novos pedidos na fila...</p>";
+    return;
+  }
+
+  container.innerHTML = fila.map(p => {
+    const dadosTexto = encodeURIComponent(JSON.stringify(p));
+
+    let botoesControle = '';
+    if (p.status === 'pendente') {
+      botoesControle = `
+        <div class="btn-row">
+          <button class="btn btn-accept" onclick="mudarStatusPedido(${p.id}, 'aceito')">Aceitar</button>
+          <button class="btn btn-refuse" onclick="solicitarRecusa(${p.id})">Recusar</button>
+        </div>`;
+    } else if (p.status === 'aceito') {
+      botoesControle = `<button class="btn btn-dispatch" onclick="darBaixa(${p.id})">Despachar (concluir)</button>`;
+    } else if (p.status === 'recusado') {
+      botoesControle = `<div class="refused-note">Pedido recusado</div>
+                        <button class="btn btn-remove" onclick="darBaixa(${p.id})">Remover da fila</button>`;
+    }
+
+    return `
+    <div class="pedido-card">
+      <div>
+        <div class="pedido-head">
+          <h3>Pedido #${p.id}</h3>
+          <span class="badge ${classeSegurancaDe(p.seguranca)}">${p.seguranca || 'Média'}</span>
+        </div>
+        <p class="info-line"><b>Cadastro:</b> <span class="badge ${p.tipoCadastro === 'completo' ? 'badge-completo' : 'badge-simples'}">${p.tipoCadastro === 'completo' ? 'Fidelidade' : 'Simples'}</span></p>
+        <p class="info-line"><b>Cliente:</b> ${p.nome} ${p.sobrenome || ''}</p>
+        <p class="info-line"><b>Contato:</b> ${p.telefone}</p>
+        <p class="info-line"><b>Destino:</b> ${p.endereco}</p>
+        <p class="info-line"><b>Itens:</b> <span class="info-highlight">${p.detalhe}</span></p>
+        <p class="info-line"><b>Borda:</b> ${p.borda || 'Sem borda'}</p>
+        <p class="info-line"><b>Extras:</b> ${p.extras || 'Nenhum'}</p>
+        <p class="info-line"><b>Obs:</b> ${p.observacoes || 'Nenhuma'}</p>
+        <p class="info-line"><b>Pagamento:</b> ${p.pagamento}</p>
+        <p class="info-line status-line">${p.status}</p>
+      </div>
+      <div>
+        <p class="total-line">Total: R$ ${p.total.toFixed(2)}</p>
+        <div class="btn-actions">
+          <button class="btn btn-print" onclick="imprimirCupom('${dadosTexto}')">Reimprimir cupom</button>
+          ${botoesControle}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function solicitarRecusa(id) {
+  const motivo = prompt("Digite o motivo pelo qual o pedido está sendo recusado:");
+  if (motivo === null || motivo.trim() === "") return;
+  mudarStatusPedido(id, 'recusado', motivo.trim());
+}
+
+function montarCupomHTML(p) {
+  return `
+    <div>
+      <div style="text-align:center;font-weight:bold;">=== PADOCA DISK PIZZAS ===</div>
+      <div style="text-align:center;font-weight:bold;">VIA IMPRESSA DE CONTROLE</div>
+      <br>
+      <div><b>PEDIDO #${p.id}</b></div>
+      <div>Hora: ${p.dataHora || ''}</div>
+      <div>--------------------------------</div>
+      <div><b>Cliente:</b> ${p.nome} ${p.sobrenome || ''}</div>
+      <div><b>Tel:</b> ${p.telefone}</div>
+      <div><b>End:</b> ${p.endereco}</div>
+      <div>--------------------------------</div>
+      <div><b>Itens:</b><br><span style="font-weight:bold;">${p.detalhe}</span></div>
+      <div><b>Borda:</b> ${p.borda || 'Sem borda'}</div>
+      <div><b>Extras:</b> ${p.extras || 'Nenhum'}</div>
+      <div>--------------------------------</div>
+      <div><b>Obs:</b> ${p.observacoes || 'Nenhuma'}</div>
+      <div>--------------------------------</div>
+      <div><b>Pagamento:</b> ${p.pagamento}</div>
+      <div style="font-weight:bold;font-size:30px !important;">TOTAL: R$ ${p.total.toFixed(2)}</div>
+      <div style="text-align:center;">==============================</div>
+    </div>
+  `;
+}
+
+function imprimirCupom(dadosUrl) {
+  const p = JSON.parse(decodeURIComponent(dadosUrl));
+  document.getElementById('cupom-impressao').innerHTML = montarCupomHTML(p);
+  window.print();
+}
+
+function imprimirCupomDuplo(dadosUrl) {
+  const p = JSON.parse(decodeURIComponent(dadosUrl));
+  document.getElementById('cupom-impressao').innerHTML = montarCupomHTML(p);
+  window.print();
+  setTimeout(() => { window.print(); }, 1000);
+}
+</script>
+</body>
+</html>

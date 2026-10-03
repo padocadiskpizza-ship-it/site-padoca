@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Padoca Disk Pizzas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg:#15100d;
+  --panel:#1e1712;
+  --panel-2:#251c16;
+  --border:#37291f;
+  --cream:#f7ecdc;
+  --text:#f4ece0;
+  --text-muted:#a99b8a;
+  --tomato:#d3491f;
+  --tomato-dark:#a83a19;
+  --gold:#e2a53e;
+  --green:#20895f;
+  --green-dark:#166a49;
+  --red:#b3261e;
+  --shadow: 0 18px 40px rgba(0,0,0,.45);
+  --radius-lg:20px;
+  --radius-md:14px;
+  --radius-sm:10px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+h1,h2,h3,.display{font-family:'Fraunces',serif;}
+.wrap{max-width:560px;margin:0 auto;padding:22px 18px 12px;position:relative;}
+.hidden{display:none !important;}
+img{max-width:100%;display:block;}
+
+/* ============ HEADER / BRAND ============ */
+.brand{text-align:center;margin-bottom:22px;}
+.brand-mark{font-size:15px;letter-spacing:.14em;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:6px;opacity:.85;}
+.brand-name{font-size:36px;font-weight:900;font-style:italic;line-height:1.05;margin:0 0 6px;color:var(--cream);}
+.brand-tag{font-size:16.5px;color:var(--text-muted);margin:0;}
+
+/* ============ PANELS ============ */
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-lg);padding:26px 20px;box-shadow:var(--shadow);margin-bottom:20px;}
+
+label{display:block;font-size:16px;font-weight:700;color:var(--text-muted);margin:0 0 6px 3px;}
+input,select,textarea{
+  width:100%;padding:14px 15px;margin:0 0 18px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:#120d0a;color:var(--text);font-size:16px;font-family:inherit;
+  outline:none;transition:border-color .15s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+textarea{height:96px;resize:none;}
+
+.btn{border:none;border-radius:var(--radius-sm);font-family:inherit;font-weight:700;font-size:15.5px;cursor:pointer;padding:15px;transition:transform .08s, filter .15s;}
+.btn:active{transform:scale(.98);}
+.btn-primary{width:100%;background:linear-gradient(155deg,var(--tomato),var(--tomato-dark));color:#fff8ef;box-shadow:0 10px 22px rgba(211,73,31,.35);}
+.btn-secondary{background:var(--panel-2);color:var(--text);border:1px solid var(--border);}
+.btn-confirm{background:var(--green);color:#fff;box-shadow:0 8px 18px rgba(32,137,95,.3);}
+.btn-danger{background:transparent;color:#e08b84;border:1px solid #4a2622;}
+.link-btn{background:none;border:none;color:var(--gold);font-size:13.5px;font-weight:700;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px;}
+
+.promo-box{font-size:18.5px;line-height:1.55;color:var(--text);background:rgba(226,165,62,.07);border:1px dashed var(--gold);border-radius:var(--radius-md);padding:15px 16px;margin-bottom:18px;cursor:pointer;}
+.promo-box b{color:var(--gold);}
+.promo-box.locked{border-color:#5a4a3a;background:rgba(255,255,255,.02);}
+.promo-box.locked b{color:var(--text-muted);}
+
+/* ============ TABS ============ */
+.tabs{display:flex;gap:10px;margin:18px 0 8px;background:var(--panel-2);padding:5px;border-radius:16px;border:1px solid var(--border);}
+.tab{flex:1;padding:12px;border:none;background:transparent;color:var(--text-muted);font-family:inherit;font-weight:700;font-size:14.5px;border-radius:12px;cursor:pointer;}
+.tab.active{background:var(--tomato);color:#fff8ef;box-shadow:0 6px 14px rgba(211,73,31,.35);}
+.hint{font-size:16px;color:var(--gold);font-weight:600;text-align:center;margin:12px 0 6px;}
+#tela-pedido{padding-bottom:180px;}
+
+/* ============ CATEGORY ROWS ============ */
+.cat-block{margin:26px 0 6px;}
+.cat-head{display:flex;justify-content:space-between;align-items:baseline;padding:0 2px;margin-bottom:12px;}
+.cat-name{font-size:20px;font-weight:700;margin:0;color:var(--cream);}
+.cat-count{font-size:15px;color:var(--text-muted);}
+.scroll-row{display:flex;gap:14px;overflow-x:auto;padding:2px 2px 16px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;}
+.scroll-row::-webkit-scrollbar{display:none;}
+
+.card{
+  flex:0 0 136px;width:136px;scroll-snap-align:start;background:#e8892f;border-radius:16px;
+  border:2px solid transparent;padding:9px;cursor:pointer;position:relative;box-shadow:0 8px 16px rgba(0,0,0,.28);
+}
+.card.selected{border-color:var(--green);}
+.card.indisponivel{opacity:.38;filter:grayscale(.5);cursor:default;}
+.card-indisponivel-tag{position:absolute;top:9px;left:9px;background:rgba(12,9,8,.85);color:#f19893;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;padding:4px 9px;border-radius:20px;}
+.card-img{width:100%;aspect-ratio:1/1;border-radius:11px;overflow:hidden;background:#e7ddca;margin-bottom:8px;}
+.card-img img{width:100%;height:100%;object-fit:cover;}
+.card-name{font-size:18px;font-weight:800;color:#241a10;line-height:1.28;margin:0 0 4px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:47px;}
+.card-price{font-size:18px;font-weight:900;color:#241a10;margin:0;}
+.card-plus{position:absolute;bottom:9px;right:9px;width:23px;height:23px;border-radius:7px;background:#241a10;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
+.card.selected .card-plus{background:var(--green);}
+
+/* ============ CART BAR ============ */
+.cart-bar{position:fixed;left:0;bottom:0;width:100%;background:#120d0a;border-top:1px solid var(--border);
+  padding:16px 18px calc(16px + env(safe-area-inset-bottom));z-index:1000;box-shadow:0 -10px 24px rgba(0,0,0,.4);}
+.cart-list{font-size:16px;color:var(--text-muted);max-height:56px;overflow-y:auto;margin-bottom:10px;line-height:1.5;}
+.cart-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.cart-total{font-size:21px;font-weight:900;color:var(--gold);font-family:'Fraunces',serif;}
+.cart-btns{display:flex;gap:10px;}
+.cart-btns .btn-danger{flex:1;padding:13px;}
+.cart-btns .btn-confirm{flex:2;padding:13px;}
+
+/* ============ CLOSED OVERLAY ============ */
+.locked-screen{position:fixed;inset:0;background:#0c0908;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:9999;text-align:center;padding:30px;}
+.locked-screen h1{font-size:30px;color:#e08b84;margin:0 0 8px;}
+.locked-screen p{color:var(--text-muted);font-size:15px;}
+
+/* ============ PIZZA DETAIL OVERLAY ============ */
+.detail{position:fixed;inset:0;background:var(--bg);z-index:4000;overflow-y:auto;display:flex;flex-direction:column;padding-bottom:112px;}
+.detail-img-wrap{position:relative;width:100%;aspect-ratio:4/3;background:var(--panel-2);}
+.detail-img-wrap img{width:100%;height:100%;object-fit:cover;}
+.detail-img-shadow{position:absolute;left:0;bottom:0;width:100%;height:55%;background:linear-gradient(to top, var(--bg), transparent);}
+.detail-badge{position:absolute;top:18px;left:18px;background:rgba(12,9,8,.85);backdrop-filter:blur(8px);color:var(--gold);padding:6px 14px;border-radius:30px;font-size:14.5px;font-weight:700;border:1px solid rgba(226,165,62,.4);}
+.detail-body{padding:22px 20px;flex-grow:1;}
+.detail-title{font-size:35px;font-weight:700;color:var(--cream);margin:0 0 6px;line-height:1.2;}
+.detail-price{font-size:22px;font-weight:800;color:var(--gold);font-family:'Fraunces',serif;margin-bottom:20px;}
+.detail-ing-box{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px;}
+.detail-ing-label{font-size:15.5px;color:var(--text-muted);font-weight:700;margin-bottom:8px;}
+.detail-ing-text{font-size:19.5px;font-weight:800;color:var(--text);line-height:1.6;}
+.detail-footer{position:fixed;left:0;bottom:0;width:100%;background:rgba(21,16,13,.92);backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);padding:16px 20px calc(16px + env(safe-area-inset-bottom));display:flex;gap:12px;z-index:4500;}
+.detail-footer .btn-secondary{flex:1;}
+.detail-footer .btn-primary{flex:2;width:auto;}
+
+/* ============ STATUS ============ */
+.extras-grid{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 20px;}
+.extra-chip{flex:1 1 calc(50% - 10px);min-width:140px;background:var(--panel-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.extra-chip.selected{border-color:var(--green);background:rgba(32,137,95,.12);}
+.extra-name{font-weight:700;font-size:17px;color:var(--text);}
+.extra-price{font-size:15px;color:var(--text-muted);margin-top:2px;}
+.extra-chip.selected .extra-price{color:#4fd39a;}
+.extra-check{flex:0 0 auto;width:19px;height:19px;border-radius:6px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;}
+.extra-chip.selected .extra-check{background:var(--green);border-color:var(--green);color:#fff;}
+
+.troco-box{background:var(--panel-2);border:1px solid var(--gold);border-radius:var(--radius-md);padding:16px 16px 6px;margin:-4px 0 18px;}
+.troco-box.invalido{border-color:#e0524a;box-shadow:0 0 0 3px rgba(179,38,30,.25);}
+.troco-box input,.troco-box select{margin-bottom:14px;}
+.troco-total{font-size:17px;color:var(--text-muted);margin:0 0 14px;}
+.troco-total b{color:var(--gold);font-size:16px;}
+.obrig{color:#e0524a;}
+.troco-aviso{font-size:13.5px;font-weight:600;color:var(--gold);margin:-4px 0 14px;}
+.troco-aviso:empty{display:none;}
+.troco-aviso.erro{color:#f19893;}
+.pix-info{background:linear-gradient(155deg,var(--gold),#c98a2a);color:#241a10;padding:14px;border-radius:var(--radius-md);margin:-4px 0 18px;font-size:15px;text-align:center;font-weight:700;}
+.status-badge{padding:16px;border-radius:var(--radius-md);font-size:15px;font-weight:700;text-align:center;margin-top:14px;}
+.status-pending{background:rgba(226,165,62,.15);color:var(--gold);border:1px solid rgba(226,165,62,.35);}
+.status-ok{background:rgba(32,137,95,.15);color:#4fd39a;border:1px solid rgba(32,137,95,.4);}
+.status-bad{background:rgba(179,38,30,.15);color:#f19893;border:1px solid rgba(179,38,30,.4);}
+.status-id{text-align:center;font-weight:800;color:var(--text-muted);letter-spacing:.04em;margin-bottom:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="aviso-fechado" class="locked-screen hidden">
+    <h1>Padoca fechada</h1>
+    <p>O site de pedidos está suspenso no momento. Volte mais tarde.</p>
+  </div>
+
+  <!-- TELA: CADASTRO SIMPLES -->
+  <div id="tela-cadastro-simples">
+    <div class="brand">
+      <div class="brand-mark">Disk pizzas</div>
+      <h1 class="brand-name">Padoca</h1>
+      <p class="brand-tag">Cadastro rápido de entrega</p>
+    </div>
+    <div class="panel">
+      <label for="simples-nome">Nome do cliente</label>
+      <input type="text" id="simples-nome" placeholder="Seu nome completo">
+      <label for="simples-endereco">Endereço de entrega</label>
+      <input type="text" id="simples-endereco" placeholder="Rua, número, bairro">
+      <label for="simples-telefone">WhatsApp / telefone</label>
+      <input type="tel" id="simples-telefone" placeholder="(18) 99999-9999">
+      <div class="promo-box" onclick="irParaCompleto()">
+        <b>Quer ganhar cupons de desconto?</b><br>
+        Faça o cadastro completo e participe de promoções, sorteios e do clube de fidelidade.
+      </div>
+      <button class="btn btn-primary" onclick="finalizarCadastroSimples()">Ver o cardápio</button>
+    </div>
+  </div>
+
+  <!-- TELA: CADASTRO COMPLETO -->
+  <div id="tela-cadastro-completo" class="hidden">
+    <div class="brand">
+      <div class="brand-mark">Clube de fidelidade</div>
+      <h1 class="brand-name">Padoca</h1>
+      <p class="brand-tag">Cadastro completo para o sorteio</p>
+    </div>
+    <div class="panel">
+      <label for="comp-nome">Nome</label>
+      <input type="text" id="comp-nome" placeholder="Nome">
+      <label for="comp-sobrenome">Sobrenome</label>
+      <input type="text" id="comp-sobrenome" placeholder="Sobrenome">
+      <label for="comp-telefone">WhatsApp principal</label>
+      <input type="tel" id="comp-telefone" placeholder="WhatsApp / celular">
+      <label for="comp-endereco">Rua / avenida</label>
+      <input type="text" id="comp-endereco" placeholder="Nome da rua ou avenida">
+      <label for="comp-numero">Número</label>
+      <input type="text" id="comp-numero" placeholder="Número da casa ou apto">
+      <button class="btn btn-primary" onclick="finalizarCadastroCompleto()">Salvar cadastro</button>
+    </div>
+  </div>
+
+  <!-- TELA: CARDÁPIO -->
+  <div id="tela-pedido" class="hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="brand-mark" style="margin:0;">Monte seu pedido</div>
+      <button class="link-btn" onclick="limparSessaoCadastro()">Mudar usuário</button>
+    </div>
+
+    <div id="bloco-promocao" class="promo-box"></div>
+
+    <div class="tabs">
+      <button id="tab-inteira" class="tab active" onclick="setTipo('inteira')">Pizza inteira</button>
+      <button id="tab-metade" class="tab" onclick="setTipo('metade')">Metade / metade</button>
+    </div>
+    <p id="instrucao-selecao" class="hint">Arraste para o lado e escolha suas pizzas</p>
+
+    <div class="cat-block">
+      <div class="cat-head"><h3 class="cat-name">Mais pedidas</h3><span class="cat-count" id="count-mais-pedidas"></span></div>
+      <div class="scroll-row" id="linha-mais-pedidas"></div>
+    </div>
+    <div class="cat-block">
+      <div class="cat-head"><h3 class="cat-name">Tradicionais</h3><span class="cat-count" id="count-tradicionais"></span></div>
+      <div class="scroll-row" id="linha-tradicionais"></div>
+    </div>
+    <div class="cat-block">
+      <div class="cat-head"><h3 class="cat-name">Especiais</h3><span class="cat-count" id="count-especiais"></span></div>
+      <div class="scroll-row" id="linha-especiais"></div>
+    </div>
+    <div class="cat-block">
+      <div class="cat-head"><h3 class="cat-name">Outros sabores</h3><span class="cat-count" id="count-outros"></span></div>
+      <div class="scroll-row" id="linha-outros"></div>
+    </div>
+  </div>
+
+  <!-- TELA: OPÇÕES / PAGAMENTO -->
+  <div id="tela-opcoes-pedido" class="hidden panel">
+    <h1 class="brand-name" style="font-size:26px;">Finalizar pedido</h1>
+    <p class="brand-tag" style="text-align:left;margin-bottom:20px;">Configure os detalhes da entrega</p>
+
+    <label for="borda-selecao">Borda recheada</label>
+    <select id="borda-selecao" onchange="atualizarInfoTroco()">
+      <option value="nenhuma">Sem borda (R$ 0,00)</option>
+      <option value="catupiry">Catupiry (+ R$ 9,00)</option>
+      <option value="mussarela">Mussarela (+ R$ 9,00)</option>
+    </select>
+
+    <label>Extras (100g)</label>
+    <div class="extras-grid" id="extras-grid"></div>
+
+    <label for="observacoes">Observações do pedido</label>
+    <textarea id="observacoes" placeholder="Retirar cebola, ponto da massa..."></textarea>
+
+    <label for="pagamento">Forma de pagamento</label>
+    <select id="pagamento" onchange="verificarFormaPagamento()">
+      <option value="selecione" selected disabled>Selecione uma opção</option>
+      <option value="Pix">Pix</option>
+      <option value="Credito">Cartão de crédito (na entrega)</option>
+      <option value="Debito">Cartão de débito (na entrega)</option>
+      <option value="Dinheiro">Dinheiro</option>
+    </select>
+
+    <div id="alerta-pix" class="pix-info hidden">Chave Pix (telefone): <b>18 99128-1861</b></div>
+
+    <div id="bloco-troco" class="troco-box hidden">
+      <p class="troco-total">Total do pedido: <b id="troco-total-valor">R$ 0.00</b></p>
+      <label for="troco-precisa">Precisa de troco? <span class="obrig">*</span></label>
+      <select id="troco-precisa" onchange="aoMudarPrecisaTroco()">
+        <option value="" selected disabled>Selecione uma opção</option>
+        <option value="nao">Não, vou pagar o valor exato</option>
+        <option value="sim">Sim, preciso de troco</option>
+      </select>
+      <div id="troco-campo-valor" class="hidden">
+        <label for="troco-valor">Troco para quanto? <span class="obrig">*</span></label>
+        <input type="text" id="troco-valor" inputmode="decimal" placeholder="Ex.: 100" oninput="atualizarInfoTroco()">
+        <div id="troco-aviso" class="troco-aviso"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn btn-secondary" onclick="voltarParaCardapio()">Voltar</button>
+      <button class="btn btn-primary" style="flex:2;" onclick="confirmarEnviarPedidoFinal()">Enviar pedido</button>
+    </div>
+  </div>
+
+  <!-- TELA: RASTREAMENTO -->
+  <div id="tela-status-pedido" class="hidden panel">
+    <h1 class="brand-name" style="font-size:26px;text-align:center;">Acompanhar pedido</h1>
+    <div id="status-container-id" class="status-id"></div>
+    <div id="status-box-mensagem"></div>
+  </div>
+
+</div>
+
+<!-- CARRINHO FLUTUANTE -->
+<div id="barra-carrinho" class="cart-bar hidden">
+  <div id="carrinho-resumo-itens" class="cart-list">Seu carrinho está vazio</div>
+  <div class="cart-total-row"><div id="carrinho-texto-total" class="cart-total">Total: R$ 0,00</div></div>
+  <div class="cart-btns">
+    <button class="btn btn-danger" onclick="limparCarrinho()">Limpar</button>
+    <button class="btn btn-confirm" onclick="avancarParaOpcoes()">Avançar</button>
+  </div>
+</div>
+
+<!-- OVERLAY DE DETALHE DA PIZZA (gerado dinamicamente, 1 template para as 28) -->
+<div id="pagina-detalhe" class="detail hidden">
+  <div class="detail-img-wrap">
+    <span id="det-badge" class="detail-badge"></span>
+    <img id="det-img" src="" alt="">
+    <div class="detail-img-shadow"></div>
+  </div>
+  <div class="detail-body">
+    <div id="det-titulo" class="detail-title"></div>
+    <div id="det-preco" class="detail-price"></div>
+    <div class="detail-ing-box">
+      <div class="detail-ing-label">Ingredientes</div>
+      <div id="det-ingredientes" class="detail-ing-text"></div>
+    </div>
+  </div>
+  <div class="detail-footer">
+    <button class="btn btn-secondary" onclick="fecharPaginaIndividual()">Voltar</button>
+    <button class="btn btn-primary" onclick="adicionarEstaticoAoCarrinho()">Adicionar ao pedido</button>
+  </div>
+</div>
+
+<script>
+let tipoCadastro = 'simples';
+let dadosCliente = {};
+let cardapio = [];
+let pizzasIndisponiveisIds = [];   // ids marcados como indisponíveis pelo painel
+let tipoPizza = 'inteira';
+let carrinhoItens = [];
+let metadesSelecionadasTemporarias = [];
+let idPedidoAtivo = null;
+let pizzaAberta = null;
+
+// Bloqueia emojis digitados em campos de texto
+document.addEventListener('input', function (e) {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    const limpo = e.target.value.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu, '');
+    if (e.target.value !== limpo) e.target.value = limpo;
+  }
+});
+
+// ============ DADOS DO CARDÁPIO (única fonte, sem duplicação) ============
+function montarCardapio() {
+  return [
+    { id: 1, categoria: "mais-pedidas", nome: "01 Mussarela", preco: 55.00, ingredientes: "Mussarela, tomate, orégano e azeitonas." },
+    { id: 2, categoria: "mais-pedidas", nome: "02 Calabresa", preco: 55.00, ingredientes: "Mussarela, calabresa, cebola roxa, orégano e azeitonas." },
+    { id: 3, categoria: "mais-pedidas", nome: "03 Marguerita", preco: 55.00, ingredientes: "Mussarela, parmesão, tomate, manjericão, orégano e azeitonas." },
+    { id: 4, categoria: "mais-pedidas", nome: "04 Presunto", preco: 55.00, ingredientes: "Mussarela, presunto, tomate, orégano e azeitonas." },
+    { id: 5, categoria: "mais-pedidas", nome: "05 Frango c/ Catupiry", preco: 60.00, ingredientes: "Mussarela, frango, Catupiry, orégano e azeitonas." },
+    { id: 6, categoria: "mais-pedidas", nome: "06 Frango Bacon", preco: 64.00, ingredientes: "Mussarela, frango, bacon, Catupiry, orégano e azeitonas." },
+    { id: 8, categoria: "tradicionais", nome: "08 Provolombo", preco: 64.00, ingredientes: "Mussarela, lombo, provolone, Catupiry, orégano e azeitonas." },
+    { id: 9, categoria: "tradicionais", nome: "09 Portuguesa", preco: 60.00, ingredientes: "Mussarela, presunto, ervilha, palmito, ovo, tomate, orégano e azeitonas." },
+    { id: 10, categoria: "tradicionais", nome: "10 Palmito", preco: 60.00, ingredientes: "Mussarela, palmito, Catupiry, orégano e azeitonas." },
+    { id: 11, categoria: "tradicionais", nome: "11 Tropical", preco: 60.00, ingredientes: "Mussarela, frango, milho verde, ervilha, ovo, tomate, orégano e azeitonas." },
+    { id: 12, categoria: "tradicionais", nome: "12 Canadense", preco: 60.00, ingredientes: "Mussarela, lombo, Catupiry, orégano e azeitonas." },
+    { id: 13, categoria: "tradicionais", nome: "13 Atum", preco: 60.00, ingredientes: "Mussarela, atum, cebola roxa, orégano e azeitonas." },
+    { id: 14, categoria: "tradicionais", nome: "14 Calapiry", preco: 60.00, ingredientes: "Mussarela, calabresa, Catupiry, orégano e azeitonas." },
+    { id: 15, categoria: "especiais", nome: "15 Bacon", preco: 60.00, ingredientes: "Mussarela, bacon, tomate, orégano e azeitonas." },
+    { id: 16, categoria: "especiais", nome: "16 Mineira", preco: 60.00, ingredientes: "Mussarela, frango, milho verde, bacon, tomate, orégano e azeitonas." },
+    { id: 17, categoria: "especiais", nome: "17 Romana", preco: 60.00, ingredientes: "Mussarela, champignon, bacon, Catupiry, orégano e azeitonas." },
+    { id: 18, categoria: "especiais", nome: "18 Pepperoni", preco: 60.00, ingredientes: "Mussarela, pepperoni, orégano e azeitonas." },
+    { id: 20, categoria: "especiais", nome: "20 Baiana", preco: 60.00, ingredientes: "Mussarela, calabresa, cebola roxa, pimenta calabresa, orégano e azeitonas." },
+    { id: 21, categoria: "especiais", nome: "21 Dois Queijos", preco: 55.00, ingredientes: "Mussarela, provolone, orégano e azeitonas." },
+    { id: 22, categoria: "outros", nome: "22 Três Queijos", preco: 60.00, ingredientes: "Mussarela, provolone, parmesão, orégano e azeitonas." },
+    { id: 23, categoria: "outros", nome: "23 Quatro Queijos", preco: 65.00, ingredientes: "Mussarela, provolone, parmesão, Catupiry, orégano e azeitonas." },
+    { id: 24, categoria: "outros", nome: "24 Brócolis", preco: 65.00, ingredientes: "Mussarela, brócolis, bacon, alho frito, orégano e azeitonas." },
+    { id: 25, categoria: "outros", nome: "25 Carne Seca", preco: 64.00, ingredientes: "Mussarela, carne seca, cebola roxa, tomate, orégano e azeitonas." },
+    { id: 27, categoria: "outros", nome: "27 Americana", preco: 60.00, ingredientes: "Mussarela, presunto, bacon, tomate, cebola roxa, orégano e azeitonas." },
+    { id: 28, categoria: "outros", nome: "28 Escarola", preco: 60.00, ingredientes: "Mussarela, escarola, bacon, tomate, cebola roxa, orégano e azeitonas." }
+  ];
+}
+
+// ============ INICIALIZAÇÃO ============
+// Sabores descontinuados: ficam de fora mesmo que ainda existam na API do servidor
+const SABORES_REMOVIDOS = [7, 19, 26];
+
+window.onload = async function () {
+  cardapio = montarCardapio();
+  renderExtras();
+
+  const salvos = localStorage.getItem('padoca_cliente');
+  if (salvos) {
+    dadosCliente = JSON.parse(salvos);
+    tipoCadastro = dadosCliente.tipoCadastro;
+    entrarNoCardapio();
+  }
+
+  await sincronizarEstadoLoja();
+  await carregarIndisponiveis();
+  setInterval(sincronizarEstadoLoja, 5000);
+
+  // Tenta atualizar pelo servidor; se a API não responder ou vier vazia, mantém os dados locais
+  try {
+    const res = await fetch(`${window.location.origin}/api/cardapio`);
+    const dadosApi = await res.json();
+    if (Array.isArray(dadosApi) && dadosApi.length > 0) {
+      cardapio = dadosApi.map(p => ({
+        ...p,
+        ingredientes: p.ingredientes || (cardapio.find(c => c.id === p.id) || {}).ingredientes || ''
+      }));
+    }
+  } catch (e) { /* segue com o cardápio local */ }
+
+  cardapio = cardapio.filter(p => !SABORES_REMOVIDOS.includes(p.id));
+  renderizarCardapio();
+};
+
+async function sincronizarEstadoLoja() {
+  try {
+    const res = await fetch(`${window.location.origin}/api/status`);
+    const data = await res.json();
+    document.getElementById('aviso-fechado').classList.toggle('hidden', !!data.online);
+  } catch (e) { /* mantém o último estado conhecido */ }
+  carregarPromocao();
+  carregarIndisponiveis();
+}
+
+// Pizzas marcadas como indisponíveis pelo painel: ficam opacas e sem clique
+async function carregarIndisponiveis() {
+  try {
+    const res = await fetch(`${window.location.origin}/api/indisponiveis`);
+    const dados = await res.json();
+    const nova = Array.isArray(dados) ? dados : [];
+    const mudou = nova.length !== pizzasIndisponiveisIds.length || nova.some(id => !pizzasIndisponiveisIds.includes(id));
+    pizzasIndisponiveisIds = nova;
+    if (mudou) renderizarCardapio();
+  } catch (e) { /* mantém o último estado conhecido */ }
+}
+
+async function carregarPromocao() {
+  const bloco = document.getElementById('bloco-promocao');
+  if (!bloco) return;
+  if (tipoCadastro === 'completo') {
+    bloco.classList.remove('locked');
+    try {
+      const res = await fetch(`${window.location.origin}/api/promocao`);
+      const data = await res.json();
+      bloco.innerHTML = `<b>Promoção exclusiva fidelidade</b><br>${data.texto}`;
+    } catch (e) {
+      bloco.innerHTML = `<b>Promoção exclusiva fidelidade</b><br>Ganhe uma bebida em compras acima de R$ 60.`;
+    }
+  } else {
+    bloco.classList.add('locked');
+    bloco.innerHTML = `<b>Promoções bloqueadas</b><br>Faça o cadastro completo para entrar no clube de benefícios.`;
+  }
+}
+
+// ============ CADASTRO ============
+function irParaCompleto() {
+  document.getElementById('tela-cadastro-simples').classList.add('hidden');
+  document.getElementById('tela-cadastro-completo').classList.remove('hidden');
+  tipoCadastro = 'completo';
+}
+
+function finalizarCadastroSimples() {
+  const nome = document.getElementById('simples-nome').value.trim();
+  const endereco = document.getElementById('simples-endereco').value.trim();
+  const telefone = document.getElementById('simples-telefone').value.trim();
+  if (!nome || !endereco || !telefone) { alert("Preencha todos os campos do cadastro de entrega."); return; }
+  dadosCliente = { nome, endereco, telefone, tipoCadastro: 'simples' };
+  localStorage.setItem('padoca_cliente', JSON.stringify(dadosCliente));
+  entrarNoCardapio();
+}
+
+function finalizarCadastroCompleto() {
+  const nome = document.getElementById('comp-nome').value.trim();
+  const sobrenome = document.getElementById('comp-sobrenome').value.trim();
+  const telefone = document.getElementById('comp-telefone').value.trim();
+  const rua = document.getElementById('comp-endereco').value.trim();
+  const numero = document.getElementById('comp-numero').value.trim();
+  if (!nome || !sobrenome || !telefone || !rua || !numero) { alert("Preencha o cadastro fidelidade por completo."); return; }
+  dadosCliente = { nome, sobrenome, telefone, endereco: `${rua}, Nº ${numero}`, tipoCadastro: 'completo' };
+  localStorage.setItem('padoca_cliente', JSON.stringify(dadosCliente));
+  entrarNoCardapio();
+}
+
+function entrarNoCardapio() {
+  document.getElementById('tela-cadastro-simples').classList.add('hidden');
+  document.getElementById('tela-cadastro-completo').classList.add('hidden');
+  document.getElementById('tela-pedido').classList.remove('hidden');
+  document.getElementById('barra-carrinho').classList.remove('hidden');
+  carregarPromocao();
+}
+
+function limparSessaoCadastro() {
+  localStorage.removeItem('padoca_cliente');
+  location.reload();
+}
+
+// ============ CARDÁPIO / SELEÇÃO ============
+function setTipo(tipo) {
+  tipoPizza = tipo;
+  metadesSelecionadasTemporarias = [];
+  document.getElementById('tab-inteira').classList.toggle('active', tipo === 'inteira');
+  document.getElementById('tab-metade').classList.toggle('active', tipo === 'metade');
+  document.getElementById('instrucao-selecao').innerText = tipo === 'inteira'
+    ? "Arraste para o lado e escolha suas pizzas"
+    : "Selecione duas metades para montar a pizza";
+  renderizarCardapio();
+}
+
+function renderizarCardapio() {
+  const linhas = {
+    "mais-pedidas": document.getElementById('linha-mais-pedidas'),
+    "tradicionais": document.getElementById('linha-tradicionais'),
+    "especiais": document.getElementById('linha-especiais'),
+    "outros": document.getElementById('linha-outros')
+  };
+  Object.values(linhas).forEach(el => { if (el) el.innerHTML = ''; });
+
+  const contadores = { "mais-pedidas": 0, "tradicionais": 0, "especiais": 0, "outros": 0 };
+  cardapio.forEach(p => { if (contadores[p.categoria] !== undefined) contadores[p.categoria]++; });
+  const sufixo = n => n === 1 ? 'sabor' : 'sabores';
+  document.getElementById('count-mais-pedidas').innerText = `${contadores["mais-pedidas"]} ${sufixo(contadores["mais-pedidas"])}`;
+  document.getElementById('count-tradicionais').innerText = `${contadores["tradicionais"]} ${sufixo(contadores["tradicionais"])}`;
+  document.getElementById('count-especiais').innerText = `${contadores["especiais"]} ${sufixo(contadores["especiais"])}`;
+  document.getElementById('count-outros').innerText = `${contadores["outros"]} ${sufixo(contadores["outros"])}`;
+
+  cardapio.forEach(p => {
+    const container = linhas[p.categoria];
+    if (!container) return;
+    const selecionada = metadesSelecionadasTemporarias.some(sel => sel.id === p.id);
+    const indisponivel = pizzasIndisponiveisIds.includes(p.id);
+    const card = document.createElement('div');
+    card.className = 'card' + (selecionada ? ' selected' : '') + (indisponivel ? ' indisponivel' : '');
+    card.onclick = indisponivel ? null : () => abrirPaginaIndividualEstatica(p.id);
+    card.innerHTML = `
+      ${indisponivel ? '<div class="card-indisponivel-tag">Indisponível</div>' : ''}
+      <div class="card-img"><img src="img/img${p.id}.jpg" onerror="this.src='https://unsplash.com';" alt="${p.nome}"></div>
+      <div class="card-name">${p.nome}</div>
+      <div class="card-price">R$ ${p.preco.toFixed(2)}</div>
+      <div class="card-plus">${selecionada ? '✓' : '+'}</div>`;
+    container.appendChild(card);
+  });
+}
+
+// ============ TELA DE DETALHE (dinâmica p/ as 28 pizzas) ============
+function abrirPaginaIndividualEstatica(id) {
+  const pizza = cardapio.find(p => p.id === id);
+  if (!pizza) { alert("Não foi possível carregar os detalhes desta pizza."); return; }
+  pizzaAberta = pizza;
+
+  document.getElementById('det-badge').innerText = `Sabor #${String(id).padStart(2, '0')}`;
+  document.getElementById('det-img').src = `img/img${id}.jpg`;
+  document.getElementById('det-img').onerror = function () { this.src = 'https://unsplash.com'; };
+  document.getElementById('det-titulo').innerText = pizza.nome;
+  document.getElementById('det-preco').innerText = `R$ ${pizza.preco.toFixed(2)}`;
+  document.getElementById('det-ingredientes').innerText = pizza.ingredientes;
+
+  document.getElementById('tela-pedido').classList.add('hidden');
+  document.getElementById('barra-carrinho').classList.add('hidden');
+  document.getElementById('pagina-detalhe').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+function fecharPaginaIndividual() {
+  document.getElementById('pagina-detalhe').classList.add('hidden');
+  document.getElementById('tela-pedido').classList.remove('hidden');
+  document.getElementById('barra-carrinho').classList.remove('hidden');
+  pizzaAberta = null;
+}
+
+// ============ CARRINHO ============
+function adicionarEstaticoAoCarrinho() {
+  if (!pizzaAberta) return;
+  executarInclusaoCarrinhoFluxo(pizzaAberta);
+}
+
+function executarInclusaoCarrinhoFluxo(pizza) {
+  if (tipoPizza === 'inteira') {
+    carrinhoItens.push({
+      tipo: 'inteira',
+      pizzas: [pizza],
+      nomeFormatado: `[Inteira: ${pizza.nome}]`,
+      precoBase: pizza.preco
+    });
+    atualizarCarrinhoVisual();
+    fecharPaginaIndividual();
+    return;
+  }
+
+  if (metadesSelecionadasTemporarias.some(p => p.id === pizza.id)) {
+    metadesSelecionadasTemporarias = metadesSelecionadasTemporarias.filter(p => p.id !== pizza.id);
+  } else {
+    metadesSelecionadasTemporarias.push(pizza);
+  }
+  fecharPaginaIndividual();
+
+  if (metadesSelecionadasTemporarias.length === 2) {
+    const [p1, p2] = metadesSelecionadasTemporarias;
+    const precoMedia = (p1.preco + p2.preco) / 2;
+    carrinhoItens.push({
+      tipo: 'metade',
+      pizzas: [p1, p2],
+      nomeFormatado: `[Meio a meio: 1/2 ${p1.nome} e 1/2 ${p2.nome}]`,
+      precoBase: precoMedia
+    });
+    metadesSelecionadasTemporarias = [];
+    document.getElementById('instrucao-selecao').innerText = "Arraste para o lado e escolha suas pizzas";
+    atualizarCarrinhoVisual();
+  } else {
+    renderizarCardapio();
+    document.getElementById('instrucao-selecao').innerText = "Escolha a 2ª metade agora";
+  }
+}
+
+function limparCarrinho() {
+  carrinhoItens = [];
+  metadesSelecionadasTemporarias = [];
+  document.getElementById('instrucao-selecao').innerText = "Arraste para o lado e escolha suas pizzas";
+  atualizarCarrinhoVisual();
+  renderizarCardapio();
+}
+
+function atualizarCarrinhoVisual() {
+  const resumo = document.getElementById('carrinho-resumo-itens');
+  const totalTexto = document.getElementById('carrinho-texto-total');
+
+  if (carrinhoItens.length === 0) {
+    resumo.innerText = "Seu carrinho está vazio";
+    totalTexto.innerText = "Total: R$ 0,00";
+    renderizarCardapio();
+    return;
+  }
+
+  let soma = 0;
+  const linhas = carrinhoItens.map(item => {
+    soma += item.precoBase;
+    return `${item.nomeFormatado} (R$ ${item.precoBase.toFixed(2)})`;
+  });
+
+  resumo.innerHTML = linhas.join('<br>');
+  totalTexto.innerText = `Total: R$ ${soma.toFixed(2)}`;
+  renderizarCardapio();
+}
+
+// ============ EXTRAS (100g) ============
+const listaExtras = [
+  { id: 'frango', nome: 'Frango', preco: 5.00 },
+  { id: 'mussarela', nome: 'Mussarela', preco: 7.00 },
+  { id: 'calabresa', nome: 'Calabresa', preco: 4.00 },
+  { id: 'catupiry', nome: 'Catupiry', preco: 7.00 },
+  { id: 'palmito', nome: 'Palmito', preco: 6.00 },
+  { id: 'bacon', nome: 'Bacon', preco: 6.00 }
+];
+let extrasSelecionados = [];
+
+function renderExtras() {
+  const grid = document.getElementById('extras-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  listaExtras.forEach(ex => {
+    const chip = document.createElement('div');
+    chip.className = 'extra-chip' + (extrasSelecionados.includes(ex.id) ? ' selected' : '');
+    chip.onclick = () => toggleExtra(ex.id);
+    chip.innerHTML = `
+      <div>
+        <div class="extra-name">${ex.nome}</div>
+        <div class="extra-price">100g · R$ ${ex.preco.toFixed(2)}</div>
+      </div>
+      <div class="extra-check">✓</div>`;
+    grid.appendChild(chip);
+  });
+}
+
+function toggleExtra(id) {
+  if (extrasSelecionados.includes(id)) {
+    extrasSelecionados = extrasSelecionados.filter(e => e !== id);
+  } else {
+    extrasSelecionados.push(id);
+  }
+  renderExtras();
+  atualizarInfoTroco();
+}
+
+// ============ FLUXO DE TELAS ============
+function avancarParaOpcoes() {
+  if (carrinhoItens.length === 0) { alert("Seu carrinho está vazio. Selecione pelo menos uma pizza para avançar."); return; }
+  document.getElementById('tela-pedido').classList.add('hidden');
+  document.getElementById('barra-carrinho').classList.add('hidden');
+  document.getElementById('tela-opcoes-pedido').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function voltarParaCardapio() {
+  document.getElementById('tela-opcoes-pedido').classList.add('hidden');
+  document.getElementById('tela-pedido').classList.remove('hidden');
+  document.getElementById('barra-carrinho').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Total final (pizzas + borda + extras) — mesma conta usada no envio do pedido
+function calcularTotalFinal() {
+  const bordaTipo = document.getElementById('borda-selecao').value;
+  const valorBordaAdicional = (bordaTipo === 'catupiry' || bordaTipo === 'mussarela') ? 9 : 0;
+  const valorExtras = listaExtras.filter(ex => extrasSelecionados.includes(ex.id)).reduce((acc, ex) => acc + ex.preco, 0);
+  return carrinhoItens.reduce((acc, item) => acc + (item.precoBase + valorBordaAdicional), 0) + valorExtras;
+}
+
+function verificarFormaPagamento() {
+  const forma = document.getElementById('pagamento').value;
+  document.getElementById('alerta-pix').classList.toggle('hidden', forma !== 'Pix');
+
+  const bloco = document.getElementById('bloco-troco');
+  bloco.classList.toggle('hidden', forma !== 'Dinheiro');
+  if (forma !== 'Dinheiro') {
+    document.getElementById('troco-precisa').value = '';
+    document.getElementById('troco-valor').value = '';
+    document.getElementById('troco-campo-valor').classList.add('hidden');
+    bloco.classList.remove('invalido');
+  }
+  atualizarInfoTroco();
+}
+
+function aoMudarPrecisaTroco() {
+  const precisa = document.getElementById('troco-precisa').value;
+  document.getElementById('troco-campo-valor').classList.toggle('hidden', precisa !== 'sim');
+  if (precisa !== 'sim') document.getElementById('troco-valor').value = '';
+  document.getElementById('bloco-troco').classList.remove('invalido');
+  atualizarInfoTroco();
+  if (precisa === 'sim') document.getElementById('troco-valor').focus();
+}
+
+// Aceita "100", "100,50", "100.50" e "1.250,00"
+function lerValorTroco() {
+  let t = document.getElementById('troco-valor').value.replace(/[^\d,.]/g, '');
+  if (t.includes(',')) t = t.replace(/\./g, '').replace(',', '.');
+  const v = parseFloat(t);
+  return isNaN(v) ? 0 : v;
+}
+
+function atualizarInfoTroco() {
+  const bloco = document.getElementById('bloco-troco');
+  if (bloco.classList.contains('hidden')) return;
+  const total = calcularTotalFinal();
+  document.getElementById('troco-total-valor').innerText = `R$ ${total.toFixed(2)}`;
+
+  const aviso = document.getElementById('troco-aviso');
+  aviso.classList.remove('erro');
+  aviso.innerText = '';
+  if (document.getElementById('troco-precisa').value !== 'sim') return;
+
+  const v = lerValorTroco();
+  if (v <= 0) return;
+  if (v <= total) {
+    aviso.classList.add('erro');
+    aviso.innerText = `O valor precisa ser maior que o total (R$ ${total.toFixed(2)}). Se vai pagar o valor exato, escolha "Não".`;
+  } else {
+    aviso.innerText = `Levaremos R$ ${(v - total).toFixed(2)} de troco.`;
+  }
+}
+
+// ============ ENVIO DO PEDIDO ============
+async function confirmarEnviarPedidoFinal() {
+  const formaPagamento = document.getElementById('pagamento').value;
+  if (formaPagamento === 'selecione' || !formaPagamento) {
+    alert("Selecione uma forma de pagamento válida para finalizar o pedido.");
+    return;
+  }
+
+  const bordaTipo = document.getElementById('borda-selecao').value;
+  let valorBordaAdicional = 0;
+  if (bordaTipo === 'catupiry' || bordaTipo === 'mussarela') valorBordaAdicional = 9;
+
+  const textBorda = bordaTipo !== 'nenhuma' ? `C/ borda ${bordaTipo}` : 'Sem borda';
+
+  const extrasObjs = listaExtras.filter(ex => extrasSelecionados.includes(ex.id));
+  const textExtras = extrasObjs.length > 0
+    ? extrasObjs.map(ex => `${ex.nome} 100g`).join(', ')
+    : 'Nenhum';
+  const valorExtras = extrasObjs.reduce((acc, ex) => acc + ex.preco, 0);
+
+  const detalheFinalPizzas = carrinhoItens.map(item => `${item.nomeFormatado} (${textBorda})`).join(' + ');
+  const valorSomaFinal = carrinhoItens.reduce((acc, item) => acc + (item.precoBase + valorBordaAdicional), 0) + valorExtras;
+
+  // Dinheiro: pergunta de troco é obrigatória
+  let textoPagamento = formaPagamento;
+  if (formaPagamento === 'Dinheiro') {
+    const blocoTroco = document.getElementById('bloco-troco');
+    const precisa = document.getElementById('troco-precisa').value;
+    if (!precisa) {
+      blocoTroco.classList.add('invalido');
+      blocoTroco.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      alert("Informe se você precisa de troco para finalizar o pedido.");
+      return;
+    }
+    if (precisa === 'nao') {
+      textoPagamento = 'Dinheiro - Sem troco (valor exato)';
+    } else {
+      const notaCliente = lerValorTroco();
+      if (notaCliente <= valorSomaFinal) {
+        blocoTroco.classList.add('invalido');
+        blocoTroco.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('troco-valor').focus();
+        alert(`Informe para quanto você precisa de troco. O valor deve ser maior que o total (R$ ${valorSomaFinal.toFixed(2)}).`);
+        return;
+      }
+      const devolver = Math.round((notaCliente - valorSomaFinal) * 100) / 100;
+      textoPagamento = `Dinheiro - Troco para R$ ${notaCliente.toFixed(2)} (devolver R$ ${devolver.toFixed(2)})`;
+    }
+    blocoTroco.classList.remove('invalido');
+  }
+
+  const payload = {
+    nome: dadosCliente.nome || 'Cliente',
+    sobrenome: dadosCliente.sobrenome || '',
+    telefone: dadosCliente.telefone || '',
+    endereco: dadosCliente.endereco || '',
+    detalhe: detalheFinalPizzas,
+    borda: textBorda,
+    extras: textExtras,
+    observacoes: document.getElementById('observacoes').value || 'Nenhuma',
+    pagamento: textoPagamento,
+    itens: carrinhoItens.map(i => ({ tipo: i.tipo, sabores: i.pizzas.map(p => p.nome), preco: i.precoBase })),
+    total: valorSomaFinal,
+    tipoCadastro: tipoCadastro
+  };
+
+  try {
+    const res = await fetch(`${window.location.origin}/api/pedidos/novo`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.success) { idPedidoAtivo = data.pedidoId; extrasSelecionados = []; abrirPainelNotificacao(); }
+    else { alert("Ocorreu um erro no servidor ao processar o pedido."); }
+  } catch (e) {
+    idPedidoAtivo = Math.floor(Math.random() * 9000) + 1000;
+    extrasSelecionados = [];
+    abrirPainelNotificacao();
+  }
+}
+
+function abrirPainelNotificacao() {
+  document.getElementById('tela-opcoes-pedido').classList.add('hidden');
+  document.getElementById('tela-status-pedido').classList.remove('hidden');
+  document.getElementById('status-container-id').innerText = `Pedido #${idPedidoAtivo}`;
+  checarStatusServidor();
+  setInterval(checarStatusServidor, 4000);
+}
+
+async function checarStatusServidor() {
+  if (!idPedidoAtivo) return;
+  const msgBox = document.getElementById('status-box-mensagem');
+  try {
+    const res = await fetch(`${window.location.origin}/api/pedidos/status/${idPedidoAtivo}`);
+    const data = await res.json();
+    if (data.status === 'pendente') {
+      msgBox.innerHTML = `<div class="status-badge status-pending">Aguardando a pizzaria aceitar o pedido...</div>`;
+    } else if (data.status === 'aceito') {
+      msgBox.innerHTML = `<div class="status-badge status-ok"><b>Pedido aceito! Em preparo na cozinha.</b></div>`;
+    } else if (data.status === 'recusado') {
+      msgBox.innerHTML = `<div class="status-badge status-bad" onclick="alert('Motivo da recusa: ${data.motivoRecusa}')">Pedido recusado. Toque para ver o motivo.</div>`;
+    } else if (data.status === 'concluido') {
+      msgBox.innerHTML = `<div class="status-badge status-ok">Pedido saiu para entrega!</div>`;
+    }
+  } catch (e) {
+    msgBox.innerHTML = `<div class="status-badge status-pending">Pedido recebido. Sincronizando com a cozinha...</div>`;
+  }
+}
+</script>
+</body>
+</html>
