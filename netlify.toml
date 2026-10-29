@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "https://painel.padocadiskpizza.com.br/*"
+  to = "/painel.html"
+  status = 200
+  force = true
