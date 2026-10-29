@@ -1,5 +1,6 @@
 [[redirects]]
-  from = "https://painel.padocadiskpizza.com.br/*"
+  from = "/*"
   to = "/painel.html"
   status = 200
   force = true
+  conditions = {Host = ["painel.padocadiskpizza.com.br"]}
