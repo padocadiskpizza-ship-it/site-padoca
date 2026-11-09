@@ -4,155 +4,219 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Padoca Disk Pizzas</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#e8531f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ============ TOKENS ============ */
 :root{
-  --bg:#15100d;
-  --panel:#1e1712;
-  --panel-2:#251c16;
-  --border:#37291f;
-  --cream:#f7ecdc;
-  --text:#f4ece0;
-  --text-muted:#a99b8a;
-  --tomato:#d3491f;
-  --tomato-dark:#a83a19;
-  --gold:#e2a53e;
-  --green:#20895f;
-  --green-dark:#166a49;
-  --red:#b3261e;
-  --shadow: 0 18px 40px rgba(0,0,0,.45);
+  --bg:#0f0a07;
+  --bg-grad: radial-gradient(1200px 600px at 50% -10%, #2a1a12 0%, #0f0a07 60%);
+  --panel:#1c1510;
+  --panel-2:#261c15;
+  --panel-glass: rgba(30,22,17,.72);
+  --border:#3a2b20;
+  --border-soft:#2d2119;
+  --cream:#f8ecd8;
+  --text:#f3e9db;
+  --text-muted:#a89a89;
+  --tomato:#e8531f;
+  --tomato-dark:#b83a12;
+  --gold:#f0b429;
+  --gold-dark:#c98a1f;
+  --green:#2ecc71;
+  --green-dark:#22a05a;
+  --red:#e0413b;
+  --blue:#3b82f6;
+  --shadow: 0 20px 50px rgba(0,0,0,.55);
+  --shadow-sm: 0 8px 18px rgba(0,0,0,.35);
+  --radius-xl:26px;
   --radius-lg:20px;
   --radius-md:14px;
   --radius-sm:10px;
+  --ease: cubic-bezier(.2,.7,.2,1);
 }
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100%;}
+body{background:var(--bg-grad);background-attachment:fixed;}
 h1,h2,h3,.display{font-family:'Fraunces',serif;}
-.wrap{max-width:560px;margin:0 auto;padding:22px 18px 12px;position:relative;}
+.wrap{max-width:580px;margin:0 auto;padding:22px 18px 12px;position:relative;}
 .hidden{display:none !important;}
 img{max-width:100%;display:block;}
+a{color:var(--gold);}
+
+/* ============ ANIMAÇÕES ============ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.92);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.fade-up{animation:fadeUp .45s var(--ease) both;}
+.pop{animation:pop .3s var(--ease) both;}
 
 /* ============ HEADER / BRAND ============ */
-.brand{text-align:center;margin-bottom:22px;}
-.brand-mark{font-size:15px;letter-spacing:.14em;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:6px;opacity:.85;}
-.brand-name{font-size:36px;font-weight:900;font-style:italic;line-height:1.05;margin:0 0 6px;color:var(--cream);}
-.brand-tag{font-size:16.5px;color:var(--text-muted);margin:0;}
+.brand{text-align:center;margin-bottom:24px;position:relative;}
+.brand-mark{font-size:12px;letter-spacing:.18em;color:var(--gold);font-weight:800;text-transform:uppercase;margin-bottom:8px;opacity:.9;}
+.brand-name{font-size:40px;font-weight:900;font-style:italic;line-height:1.02;margin:0 0 8px;color:var(--cream);text-shadow:0 6px 24px rgba(240,180,41,.15);}
+.brand-tag{font-size:15px;color:var(--text-muted);margin:0;}
+
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:10px;}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--panel-2);border:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text-muted);}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);}
+.chip.offline .dot{background:var(--red);}
 
 /* ============ PANELS ============ */
-.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-lg);padding:26px 20px;box-shadow:var(--shadow);margin-bottom:20px;}
+.panel{background:linear-gradient(180deg,var(--panel),#16100b);border:1px solid var(--border);border-radius:var(--radius-lg);padding:26px 20px;box-shadow:var(--shadow);margin-bottom:20px;animation:fadeUp .4s var(--ease);}
+.panel-glass{background:var(--panel-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);}
 
-label{display:block;font-size:16px;font-weight:700;color:var(--text-muted);margin:0 0 6px 3px;}
+label{display:block;font-size:13.5px;font-weight:700;color:var(--text-muted);margin:0 0 7px 3px;text-transform:uppercase;letter-spacing:.04em;}
 input,select,textarea{
-  width:100%;padding:14px 15px;margin:0 0 18px;border-radius:var(--radius-sm);
+  width:100%;padding:15px 16px;margin:0 0 18px;border-radius:var(--radius-sm);
   border:1px solid var(--border);background:#120d0a;color:var(--text);font-size:16px;font-family:inherit;
-  outline:none;transition:border-color .15s;
+  outline:none;transition:border-color .18s, box-shadow .18s;
 }
-input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,180,41,.15);}
 textarea{height:96px;resize:none;}
 
-.btn{border:none;border-radius:var(--radius-sm);font-family:inherit;font-weight:700;font-size:15.5px;cursor:pointer;padding:15px;transition:transform .08s, filter .15s;}
-.btn:active{transform:scale(.98);}
-.btn-primary{width:100%;background:linear-gradient(155deg,var(--tomato),var(--tomato-dark));color:#fff8ef;box-shadow:0 10px 22px rgba(211,73,31,.35);}
+.btn{border:none;border-radius:var(--radius-sm);font-family:inherit;font-weight:700;font-size:15.5px;cursor:pointer;padding:15px;transition:transform .08s, filter .15s, box-shadow .15s;}
+.btn:active{transform:scale(.97);}
+.btn-primary{width:100%;background:linear-gradient(155deg,var(--tomato),var(--tomato-dark));color:#fff8ef;box-shadow:0 10px 24px rgba(232,83,31,.38);}
+.btn-primary:hover{filter:brightness(1.08);}
 .btn-secondary{background:var(--panel-2);color:var(--text);border:1px solid var(--border);}
-.btn-confirm{background:var(--green);color:#fff;box-shadow:0 8px 18px rgba(32,137,95,.3);}
-.btn-danger{background:transparent;color:#e08b84;border:1px solid #4a2622;}
+.btn-confirm{background:linear-gradient(155deg,var(--green),var(--green-dark));color:#fff;box-shadow:0 8px 20px rgba(46,204,113,.3);}
+.btn-danger{background:transparent;color:#f19893;border:1px solid #4a2622;}
 .link-btn{background:none;border:none;color:var(--gold);font-size:13.5px;font-weight:700;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px;}
 
-.promo-box{font-size:18.5px;line-height:1.55;color:var(--text);background:rgba(226,165,62,.07);border:1px dashed var(--gold);border-radius:var(--radius-md);padding:15px 16px;margin-bottom:18px;cursor:pointer;}
+.promo-box{font-size:16px;line-height:1.55;color:var(--text);background:linear-gradient(135deg,rgba(240,180,41,.1),rgba(232,83,31,.05));border:1px dashed var(--gold);border-radius:var(--radius-md);padding:16px 17px;margin-bottom:18px;cursor:pointer;position:relative;overflow:hidden;}
+.promo-box::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);background-size:200% 100%;animation:shimmer 4s linear infinite;}
 .promo-box b{color:var(--gold);}
 .promo-box.locked{border-color:#5a4a3a;background:rgba(255,255,255,.02);}
 .promo-box.locked b{color:var(--text-muted);}
+.promo-box.locked::before{display:none;}
 
 /* ============ TABS ============ */
-.tabs{display:flex;gap:10px;margin:18px 0 8px;background:var(--panel-2);padding:5px;border-radius:16px;border:1px solid var(--border);}
-.tab{flex:1;padding:12px;border:none;background:transparent;color:var(--text-muted);font-family:inherit;font-weight:700;font-size:14.5px;border-radius:12px;cursor:pointer;}
-.tab.active{background:var(--tomato);color:#fff8ef;box-shadow:0 6px 14px rgba(211,73,31,.35);}
-.hint{font-size:16px;color:var(--gold);font-weight:600;text-align:center;margin:12px 0 6px;}
-#tela-pedido{padding-bottom:180px;}
+.tabs{display:flex;gap:8px;margin:18px 0 8px;background:var(--panel-2);padding:5px;border-radius:16px;border:1px solid var(--border);}
+.tab{flex:1;padding:12px;border:none;background:transparent;color:var(--text-muted);font-family:inherit;font-weight:700;font-size:14px;border-radius:12px;cursor:pointer;transition:all .18s;}
+.tab.active{background:linear-gradient(155deg,var(--tomato),var(--tomato-dark));color:#fff8ef;box-shadow:0 6px 16px rgba(232,83,31,.35);}
+.hint{font-size:15px;color:var(--gold);font-weight:600;text-align:center;margin:12px 0 6px;}
+#tela-pedido{padding-bottom:190px;}
 
 /* ============ CATEGORY ROWS ============ */
-.cat-block{margin:26px 0 6px;}
+.cat-block{margin:28px 0 6px;}
 .cat-head{display:flex;justify-content:space-between;align-items:baseline;padding:0 2px;margin-bottom:12px;}
-.cat-name{font-size:20px;font-weight:700;margin:0;color:var(--cream);}
-.cat-count{font-size:15px;color:var(--text-muted);}
-.scroll-row{display:flex;gap:14px;overflow-x:auto;padding:2px 2px 16px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;}
+.cat-name{font-size:21px;font-weight:700;margin:0;color:var(--cream);}
+.cat-count{font-size:13.5px;color:var(--text-muted);background:var(--panel-2);padding:4px 10px;border-radius:999px;border:1px solid var(--border);}
+.scroll-row{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 18px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .scroll-row::-webkit-scrollbar{display:none;}
 
 .card{
-  flex:0 0 136px;width:136px;scroll-snap-align:start;background:#e8892f;border-radius:16px;
-  border:2px solid transparent;padding:9px;cursor:pointer;position:relative;box-shadow:0 8px 16px rgba(0,0,0,.28);
+  flex:0 0 142px;width:142px;scroll-snap-align:start;background:linear-gradient(180deg,#f2a34a,#e07a1f);
+  border-radius:18px;border:2px solid transparent;padding:9px;cursor:pointer;position:relative;
+  box-shadow:0 10px 20px rgba(0,0,0,.3);transition:transform .18s var(--ease), box-shadow .18s, border-color .18s;
 }
-.card.selected{border-color:var(--green);}
-.card.indisponivel{opacity:.38;filter:grayscale(.5);cursor:default;}
-.card-indisponivel-tag{position:absolute;top:9px;left:9px;background:rgba(12,9,8,.85);color:#f19893;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;padding:4px 9px;border-radius:20px;}
-.card-img{width:100%;aspect-ratio:1/1;border-radius:11px;overflow:hidden;background:#e7ddca;margin-bottom:8px;}
-.card-img img{width:100%;height:100%;object-fit:cover;}
-.card-name{font-size:18px;font-weight:800;color:#241a10;line-height:1.28;margin:0 0 4px;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:47px;}
-.card-price{font-size:18px;font-weight:900;color:#241a10;margin:0;}
-.card-plus{position:absolute;bottom:9px;right:9px;width:23px;height:23px;border-radius:7px;background:#241a10;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
+.card:hover{transform:translateY(-4px);box-shadow:0 16px 28px rgba(0,0,0,.4);}
+.card.selected{border-color:var(--green);box-shadow:0 0 0 3px rgba(46,204,113,.25);}
+.card.indisponivel{opacity:.35;filter:grayscale(.6);cursor:default;transform:none;}
+.card-indisponivel-tag{position:absolute;top:9px;left:9px;background:rgba(12,9,8,.88);color:#f19893;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:4px 9px;border-radius:20px;z-index:2;}
+.card-img{width:100%;aspect-ratio:1/1;border-radius:12px;overflow:hidden;background:#e7ddca;margin-bottom:8px;position:relative;}
+.card-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s var(--ease);}
+.card:hover .card-img img{transform:scale(1.08);}
+.card-name{font-size:15.5px;font-weight:800;color:#241a10;line-height:1.25;margin:0 0 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:39px;}
+.card-price{font-size:16px;font-weight:900;color:#241a10;margin:0;}
+.card-plus{position:absolute;bottom:9px;right:9px;width:26px;height:26px;border-radius:8px;background:#241a10;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;box-shadow:0 4px 10px rgba(0,0,0,.3);}
 .card.selected .card-plus{background:var(--green);}
 
 /* ============ CART BAR ============ */
-.cart-bar{position:fixed;left:0;bottom:0;width:100%;background:#120d0a;border-top:1px solid var(--border);
-  padding:16px 18px calc(16px + env(safe-area-inset-bottom));z-index:1000;box-shadow:0 -10px 24px rgba(0,0,0,.4);}
-.cart-list{font-size:16px;color:var(--text-muted);max-height:56px;overflow-y:auto;margin-bottom:10px;line-height:1.5;}
+.cart-bar{position:fixed;left:0;bottom:0;width:100%;background:linear-gradient(180deg,rgba(18,13,10,.96),#0c0908);border-top:1px solid var(--border);
+  padding:14px 18px calc(14px + env(safe-area-inset-bottom));z-index:1000;box-shadow:0 -14px 30px rgba(0,0,0,.5);backdrop-filter:blur(14px);}
+.cart-list{font-size:14.5px;color:var(--text-muted);max-height:62px;overflow-y:auto;margin-bottom:10px;line-height:1.5;}
 .cart-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-.cart-total{font-size:21px;font-weight:900;color:var(--gold);font-family:'Fraunces',serif;}
+.cart-total{font-size:22px;font-weight:900;color:var(--gold);font-family:'Fraunces',serif;}
 .cart-btns{display:flex;gap:10px;}
 .cart-btns .btn-danger{flex:1;padding:13px;}
 .cart-btns .btn-confirm{flex:2;padding:13px;}
 
 /* ============ CLOSED OVERLAY ============ */
 .locked-screen{position:fixed;inset:0;background:#0c0908;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:9999;text-align:center;padding:30px;}
-.locked-screen h1{font-size:30px;color:#e08b84;margin:0 0 8px;}
+.locked-screen h1{font-size:32px;color:#f19893;margin:0 0 8px;}
 .locked-screen p{color:var(--text-muted);font-size:15px;}
 
 /* ============ PIZZA DETAIL OVERLAY ============ */
-.detail{position:fixed;inset:0;background:var(--bg);z-index:4000;overflow-y:auto;display:flex;flex-direction:column;padding-bottom:112px;}
+.detail{position:fixed;inset:0;background:var(--bg);z-index:4000;overflow-y:auto;display:flex;flex-direction:column;padding-bottom:116px;animation:fadeUp .3s var(--ease);}
 .detail-img-wrap{position:relative;width:100%;aspect-ratio:4/3;background:var(--panel-2);}
 .detail-img-wrap img{width:100%;height:100%;object-fit:cover;}
-.detail-img-shadow{position:absolute;left:0;bottom:0;width:100%;height:55%;background:linear-gradient(to top, var(--bg), transparent);}
-.detail-badge{position:absolute;top:18px;left:18px;background:rgba(12,9,8,.85);backdrop-filter:blur(8px);color:var(--gold);padding:6px 14px;border-radius:30px;font-size:14.5px;font-weight:700;border:1px solid rgba(226,165,62,.4);}
-.detail-body{padding:22px 20px;flex-grow:1;}
-.detail-title{font-size:35px;font-weight:700;color:var(--cream);margin:0 0 6px;line-height:1.2;}
-.detail-price{font-size:22px;font-weight:800;color:var(--gold);font-family:'Fraunces',serif;margin-bottom:20px;}
+.detail-img-shadow{position:absolute;left:0;bottom:0;width:100%;height:60%;background:linear-gradient(to top, var(--bg), transparent);}
+.detail-badge{position:absolute;top:18px;left:18px;background:rgba(12,9,8,.85);backdrop-filter:blur(8px);color:var(--gold);padding:7px 15px;border-radius:30px;font-size:13.5px;font-weight:700;border:1px solid rgba(240,180,41,.4);}
+.detail-body{padding:24px 20px;flex-grow:1;}
+.detail-title{font-size:36px;font-weight:700;color:var(--cream);margin:0 0 6px;line-height:1.15;}
+.detail-price{font-size:24px;font-weight:800;color:var(--gold);font-family:'Fraunces',serif;margin-bottom:20px;}
 .detail-ing-box{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px;}
-.detail-ing-label{font-size:15.5px;color:var(--text-muted);font-weight:700;margin-bottom:8px;}
-.detail-ing-text{font-size:19.5px;font-weight:800;color:var(--text);line-height:1.6;}
-.detail-footer{position:fixed;left:0;bottom:0;width:100%;background:rgba(21,16,13,.92);backdrop-filter:blur(20px);
-  border-top:1px solid var(--border);padding:16px 20px calc(16px + env(safe-area-inset-bottom));display:flex;gap:12px;z-index:4500;}
+.detail-ing-label{font-size:13px;color:var(--text-muted);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;}
+.detail-ing-text{font-size:17px;font-weight:600;color:var(--text);line-height:1.6;}
+.detail-footer{position:fixed;left:0;bottom:0;width:100%;background:rgba(15,10,7,.92);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:16px 20px calc(16px + env(safe-area-inset-bottom));display:flex;gap:12px;z-index:4500;}
 .detail-footer .btn-secondary{flex:1;}
 .detail-footer .btn-primary{flex:2;width:auto;}
 
-/* ============ STATUS ============ */
+/* ============ EXTRAS ============ */
 .extras-grid{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 20px;}
-.extra-chip{flex:1 1 calc(50% - 10px);min-width:140px;background:var(--panel-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;}
-.extra-chip.selected{border-color:var(--green);background:rgba(32,137,95,.12);}
-.extra-name{font-weight:700;font-size:17px;color:var(--text);}
-.extra-price{font-size:15px;color:var(--text-muted);margin-top:2px;}
+.extra-chip{flex:1 1 calc(50% - 10px);min-width:140px;background:var(--panel-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;transition:all .15s;}
+.extra-chip:hover{border-color:var(--gold);}
+.extra-chip.selected{border-color:var(--green);background:rgba(46,204,113,.1);}
+.extra-name{font-weight:700;font-size:16px;color:var(--text);}
+.extra-price{font-size:13px;color:var(--text-muted);margin-top:2px;}
 .extra-chip.selected .extra-price{color:#4fd39a;}
-.extra-check{flex:0 0 auto;width:19px;height:19px;border-radius:6px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;}
+.extra-check{flex:0 0 auto;width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;transition:all .15s;}
 .extra-chip.selected .extra-check{background:var(--green);border-color:var(--green);color:#fff;}
 
 .troco-box{background:var(--panel-2);border:1px solid var(--gold);border-radius:var(--radius-md);padding:16px 16px 6px;margin:-4px 0 18px;}
-.troco-box.invalido{border-color:#e0524a;box-shadow:0 0 0 3px rgba(179,38,30,.25);}
+.troco-box.invalido{border-color:#e0524a;box-shadow:0 0 0 3px rgba(224,65,59,.25);}
 .troco-box input,.troco-box select{margin-bottom:14px;}
-.troco-total{font-size:17px;color:var(--text-muted);margin:0 0 14px;}
+.troco-total{font-size:16px;color:var(--text-muted);margin:0 0 14px;}
 .troco-total b{color:var(--gold);font-size:16px;}
 .obrig{color:#e0524a;}
-.troco-aviso{font-size:13.5px;font-weight:600;color:var(--gold);margin:-4px 0 14px;}
+.troco-aviso{font-size:13px;font-weight:600;color:var(--gold);margin:-4px 0 14px;}
 .troco-aviso:empty{display:none;}
 .troco-aviso.erro{color:#f19893;}
-.pix-info{background:linear-gradient(155deg,var(--gold),#c98a2a);color:#241a10;padding:14px;border-radius:var(--radius-md);margin:-4px 0 18px;font-size:15px;text-align:center;font-weight:700;}
-.status-badge{padding:16px;border-radius:var(--radius-md);font-size:15px;font-weight:700;text-align:center;margin-top:14px;}
-.status-pending{background:rgba(226,165,62,.15);color:var(--gold);border:1px solid rgba(226,165,62,.35);}
-.status-ok{background:rgba(32,137,95,.15);color:#4fd39a;border:1px solid rgba(32,137,95,.4);}
-.status-bad{background:rgba(179,38,30,.15);color:#f19893;border:1px solid rgba(179,38,30,.4);}
+.pix-info{background:linear-gradient(155deg,var(--gold),#c98a1f);color:#241a10;padding:14px;border-radius:var(--radius-md);margin:-4px 0 18px;font-size:14.5px;text-align:center;font-weight:700;}
+.status-badge{padding:16px;border-radius:var(--radius-md);font-size:14.5px;font-weight:700;text-align:center;margin-top:14px;}
+.status-pending{background:rgba(240,180,41,.15);color:var(--gold);border:1px solid rgba(240,180,41,.35);}
+.status-ok{background:rgba(46,204,113,.15);color:#4fd39a;border:1px solid rgba(46,204,113,.4);}
+.status-bad{background:rgba(224,65,59,.15);color:#f19893;border:1px solid rgba(224,65,59,.4);}
 .status-id{text-align:center;font-weight:800;color:var(--text-muted);letter-spacing:.04em;margin-bottom:6px;}
+
+/* ============ LOGIN / CADASTRO CLIENTE ============ */
+.auth-tabs{display:flex;gap:6px;margin-bottom:18px;background:var(--panel-2);padding:4px;border-radius:14px;border:1px solid var(--border);}
+.auth-tab{flex:1;padding:11px;border:none;background:transparent;color:var(--text-muted);font-family:inherit;font-weight:700;font-size:14px;border-radius:11px;cursor:pointer;transition:all .18s;}
+.auth-tab.active{background:linear-gradient(155deg,var(--gold),var(--gold-dark));color:#241a10;box-shadow:0 4px 12px rgba(240,180,41,.3);}
+.auth-hint{font-size:13px;color:var(--text-muted);text-align:center;margin:-4px 0 16px;line-height:1.45;}
+.auth-hint b{color:var(--gold);}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:46px;}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;padding:4px;}
+.divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--text-muted);font-size:12px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ============ TOAST ============ */
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--panel);border:1px solid var(--border);color:var(--text);padding:12px 18px;border-radius:12px;box-shadow:var(--shadow);z-index:9999;opacity:0;pointer-events:none;transition:all .3s var(--ease);font-size:14px;font-weight:600;max-width:90vw;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.ok{border-color:var(--green);color:#4fd39a;}
+.toast.err{border-color:var(--red);color:#f19893;}
+
+/* ============ MODAL CONFIRMAÇÃO ============ */
+.confirm-backdrop{position:fixed;inset:0;background:rgba(8,5,3,.7);z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeUp .2s;}
+.confirm-box{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;max-width:360px;width:100%;box-shadow:var(--shadow);}
+.confirm-box h3{margin:0 0 8px;font-size:20px;color:var(--cream);}
+.confirm-box p{color:var(--text-muted);font-size:14px;margin:0 0 18px;line-height:1.5;}
+.confirm-actions{display:flex;gap:10px;}
+.confirm-actions .btn{flex:1;}
+
+@media (max-width:480px){
+  .brand-name{font-size:34px;}
+  .card{flex:0 0 128px;width:128px;}
+}
 </style>
 </head>
 <body>
@@ -163,55 +227,19 @@ textarea{height:96px;resize:none;}
     <p>O site de pedidos está suspenso no momento. Volte mais tarde.</p>
   </div>
 
-  <!-- TELA: CADASTRO SIMPLES -->
-  <div id="tela-cadastro-simples">
-    <div class="brand">
-      <div class="brand-mark">Disk pizzas</div>
-      <h1 class="brand-name">Padoca</h1>
-      <p class="brand-tag">Cadastro rápido de entrega</p>
-    </div>
-    <div class="panel">
-      <label for="simples-nome">Nome do cliente</label>
-      <input type="text" id="simples-nome" placeholder="Seu nome completo">
-      <label for="simples-endereco">Endereço de entrega</label>
-      <input type="text" id="simples-endereco" placeholder="Rua, número, bairro">
-      <label for="simples-telefone">WhatsApp / telefone</label>
-      <input type="tel" id="simples-telefone" placeholder="(18) 99999-9999">
-      <div class="promo-box" onclick="irParaCompleto()">
-        <b>Quer ganhar cupons de desconto?</b><br>
-        Faça o cadastro completo e participe de promoções, sorteios e do clube de fidelidade.
-      </div>
-      <button class="btn btn-primary" onclick="finalizarCadastroSimples()">Ver o cardápio</button>
-    </div>
-  </div>
-
-  <!-- TELA: CADASTRO COMPLETO -->
-  <div id="tela-cadastro-completo" class="hidden">
-    <div class="brand">
-      <div class="brand-mark">Clube de fidelidade</div>
-      <h1 class="brand-name">Padoca</h1>
-      <p class="brand-tag">Cadastro completo para o sorteio</p>
-    </div>
-    <div class="panel">
-      <label for="comp-nome">Nome</label>
-      <input type="text" id="comp-nome" placeholder="Nome">
-      <label for="comp-sobrenome">Sobrenome</label>
-      <input type="text" id="comp-sobrenome" placeholder="Sobrenome">
-      <label for="comp-telefone">WhatsApp principal</label>
-      <input type="tel" id="comp-telefone" placeholder="WhatsApp / celular">
-      <label for="comp-endereco">Rua / avenida</label>
-      <input type="text" id="comp-endereco" placeholder="Nome da rua ou avenida">
-      <label for="comp-numero">Número</label>
-      <input type="text" id="comp-numero" placeholder="Número da casa ou apto">
-      <button class="btn btn-primary" onclick="finalizarCadastroCompleto()">Salvar cadastro</button>
-    </div>
-  </div>
-
   <!-- TELA: CARDÁPIO -->
-  <div id="tela-pedido" class="hidden">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <div class="brand-mark" style="margin:0;">Monte seu pedido</div>
-      <button class="link-btn" onclick="limparSessaoCadastro()">Mudar usuário</button>
+  <div id="tela-pedido">
+    <div class="top-bar">
+      <div class="chip" id="chip-status"><span class="dot"></span> Aberto</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span id="conta-logada-nome" style="font-size:12.5px;color:var(--text-muted);font-weight:700;"></span>
+        <button class="link-btn" onclick="limparSessaoCadastro()">Mudar usuário</button>
+      </div>
+    </div>
+    <div class="brand">
+      <div class="brand-mark">Padoca disk pizzas</div>
+      <h1 class="brand-name">Monte seu pedido</h1>
+      <p class="brand-tag">Escolha suas pizzas favoritas e finalize em minutos</p>
     </div>
 
     <div id="bloco-promocao" class="promo-box"></div>
@@ -240,10 +268,86 @@ textarea{height:96px;resize:none;}
     </div>
   </div>
 
+  <!-- TELA: LOGIN / CADASTRO CLIENTE (depois do carrinho) -->
+  <div id="tela-login" class="hidden panel">
+    <div class="brand" style="margin-bottom:14px;">
+      <div class="brand-mark">Sua conta</div>
+      <h1 class="brand-name" style="font-size:28px;">Entre ou cadastre-se</h1>
+      <p class="brand-tag" style="text-align:left;">Para finalizar o pedido precisamos identificar você</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button id="auth-tab-entrar" class="auth-tab active" onclick="setAuthTab('entrar')">Entrar</button>
+      <button id="auth-tab-cadastrar" class="auth-tab" onclick="setAuthTab('cadastrar')">Criar conta</button>
+    </div>
+
+    <!-- ENTRAR -->
+    <div id="auth-entrar">
+      <p class="auth-hint">Use o <b>telefone</b> e a <b>senha</b> da sua conta.</p>
+      <label for="login-telefone">Telefone</label>
+      <input type="tel" id="login-telefone" placeholder="(18) 99999-9999">
+      <label for="login-senha">Senha</label>
+      <div class="pw-wrap">
+        <input type="password" id="login-senha" placeholder="Sua senha">
+        <button type="button" class="pw-toggle" onclick="togglePw('login-senha', this)">👁</button>
+      </div>
+      <button class="btn btn-primary" onclick="fazerLoginCliente()">Entrar e continuar</button>
+    </div>
+
+    <!-- CADASTRAR -->
+    <div id="auth-cadastrar" class="hidden">
+      <p class="auth-hint">Crie sua conta para acompanhar pedidos e ganhar benefícios.</p>
+      <label for="cad2-nome">Nome completo</label>
+      <input type="text" id="cad2-nome" placeholder="Seu nome completo">
+      <label for="cad2-telefone">Telefone</label>
+      <input type="tel" id="cad2-telefone" placeholder="(18) 99999-9999">
+      <label for="cad2-endereco">Endereço de entrega</label>
+      <input type="text" id="cad2-endereco" placeholder="Rua, número, bairro">
+      <label for="cad2-senha">Senha</label>
+      <div class="pw-wrap">
+        <input type="password" id="cad2-senha" placeholder="Crie uma senha">
+        <button type="button" class="pw-toggle" onclick="togglePw('cad2-senha', this)">👁</button>
+      </div>
+      <label for="cad2-senha2">Confirmar senha</label>
+      <div class="pw-wrap">
+        <input type="password" id="cad2-senha2" placeholder="Repita a senha">
+        <button type="button" class="pw-toggle" onclick="togglePw('cad2-senha2', this)">👁</button>
+      </div>
+      <button class="btn btn-confirm" onclick="fazerCadastroCliente()">Criar conta e continuar</button>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <button class="btn btn-secondary" onclick="voltarLoginParaCardapio()">Voltar</button>
+    </div>
+  </div>
+
+  <!-- TELA: CADASTRO (dados de entrega) - mantida para compatibilidade -->
+  <div id="tela-cadastro" class="hidden panel">
+    <h1 class="brand-name" style="font-size:26px;">Seus dados de entrega</h1>
+    <p class="brand-tag" style="text-align:left;margin-bottom:20px;">Só precisamos disso pra te entregar as pizzas</p>
+
+    <label for="cad-nome">Nome completo</label>
+    <input type="text" id="cad-nome" placeholder="Seu nome completo">
+
+    <label for="cad-rua">Rua</label>
+    <input type="text" id="cad-rua" placeholder="Nome da rua ou avenida, com número">
+
+    <label for="cad-bairro">Bairro</label>
+    <input type="text" id="cad-bairro" placeholder="Seu bairro">
+
+    <label for="cad-telefone">Telefone</label>
+    <input type="tel" id="cad-telefone" placeholder="(18) 99999-9999">
+
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn btn-secondary" onclick="voltarDoCadastroParaCardapio()">Voltar</button>
+      <button class="btn btn-primary" style="flex:2;" onclick="finalizarCadastro()">Continuar</button>
+    </div>
+  </div>
+
   <!-- TELA: OPÇÕES / PAGAMENTO -->
   <div id="tela-opcoes-pedido" class="hidden panel">
     <h1 class="brand-name" style="font-size:26px;">Finalizar pedido</h1>
-    <p class="brand-tag" style="text-align:left;margin-bottom:20px;">Configure os detalhes da entrega</p>
+    <p class="brand-tag" style="text-align:left;margin-bottom:20px;">Configure os detalhes da entrega e pagamento</p>
 
     <label for="borda-selecao">Borda recheada</label>
     <select id="borda-selecao" onchange="atualizarInfoTroco()">
@@ -295,12 +399,15 @@ textarea{height:96px;resize:none;}
     <h1 class="brand-name" style="font-size:26px;text-align:center;">Acompanhar pedido</h1>
     <div id="status-container-id" class="status-id"></div>
     <div id="status-box-mensagem"></div>
+    <div style="margin-top:18px;">
+      <button class="btn btn-secondary" onclick="voltarParaNovoPedido()">Fazer novo pedido</button>
+    </div>
   </div>
 
 </div>
 
 <!-- CARRINHO FLUTUANTE -->
-<div id="barra-carrinho" class="cart-bar hidden">
+<div id="barra-carrinho" class="cart-bar">
   <div id="carrinho-resumo-itens" class="cart-list">Seu carrinho está vazio</div>
   <div class="cart-total-row"><div id="carrinho-texto-total" class="cart-total">Total: R$ 0,00</div></div>
   <div class="cart-btns">
@@ -309,7 +416,7 @@ textarea{height:96px;resize:none;}
   </div>
 </div>
 
-<!-- OVERLAY DE DETALHE DA PIZZA (gerado dinamicamente, 1 template para as 28) -->
+<!-- OVERLAY DE DETALHE DA PIZZA -->
 <div id="pagina-detalhe" class="detail hidden">
   <div class="detail-img-wrap">
     <span id="det-badge" class="detail-badge"></span>
@@ -330,18 +437,31 @@ textarea{height:96px;resize:none;}
   </div>
 </div>
 
+<div id="toast" class="toast"></div>
+
+<script src="/config.js"></script>
 <script>
 let tipoCadastro = 'simples';
 let dadosCliente = {};
 let cardapio = [];
-let pizzasIndisponiveisIds = [];   // ids marcados como indisponíveis pelo painel
+let pizzasIndisponiveisIds = [];
 let tipoPizza = 'inteira';
 let carrinhoItens = [];
 let metadesSelecionadasTemporarias = [];
 let idPedidoAtivo = null;
 let pizzaAberta = null;
+let contaLogada = null;
 
-// Bloqueia emojis digitados em campos de texto
+// ---------- toast ----------
+function toast(msg, tipo='ok', ms=2600){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (tipo==='err'?'err':'ok');
+  clearTimeout(t._t);
+  t._t = setTimeout(()=> t.classList.remove('show'), ms);
+}
+
+// ---------- bloqueia emojis ----------
 document.addEventListener('input', function (e) {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
     const limpo = e.target.value.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu, '');
@@ -349,7 +469,7 @@ document.addEventListener('input', function (e) {
   }
 });
 
-// ============ DADOS DO CARDÁPIO (única fonte, sem duplicação) ============
+// ============ CARDÁPIO ============
 function montarCardapio() {
   return [
     { id: 1, categoria: "mais-pedidas", nome: "01 Mussarela", preco: 55.00, ingredientes: "Mussarela, tomate, orégano e azeitonas." },
@@ -358,50 +478,58 @@ function montarCardapio() {
     { id: 4, categoria: "mais-pedidas", nome: "04 Presunto", preco: 55.00, ingredientes: "Mussarela, presunto, tomate, orégano e azeitonas." },
     { id: 5, categoria: "mais-pedidas", nome: "05 Frango c/ Catupiry", preco: 60.00, ingredientes: "Mussarela, frango, Catupiry, orégano e azeitonas." },
     { id: 6, categoria: "mais-pedidas", nome: "06 Frango Bacon", preco: 64.00, ingredientes: "Mussarela, frango, bacon, Catupiry, orégano e azeitonas." },
-    { id: 8, categoria: "tradicionais", nome: "08 Provolombo", preco: 64.00, ingredientes: "Mussarela, lombo, provolone, Catupiry, orégano e azeitonas." },
-    { id: 9, categoria: "tradicionais", nome: "09 Portuguesa", preco: 60.00, ingredientes: "Mussarela, presunto, ervilha, palmito, ovo, tomate, orégano e azeitonas." },
-    { id: 10, categoria: "tradicionais", nome: "10 Palmito", preco: 60.00, ingredientes: "Mussarela, palmito, Catupiry, orégano e azeitonas." },
-    { id: 11, categoria: "tradicionais", nome: "11 Tropical", preco: 60.00, ingredientes: "Mussarela, frango, milho verde, ervilha, ovo, tomate, orégano e azeitonas." },
-    { id: 12, categoria: "tradicionais", nome: "12 Canadense", preco: 60.00, ingredientes: "Mussarela, lombo, Catupiry, orégano e azeitonas." },
-    { id: 13, categoria: "tradicionais", nome: "13 Atum", preco: 60.00, ingredientes: "Mussarela, atum, cebola roxa, orégano e azeitonas." },
-    { id: 14, categoria: "tradicionais", nome: "14 Calapiry", preco: 60.00, ingredientes: "Mussarela, calabresa, Catupiry, orégano e azeitonas." },
-    { id: 15, categoria: "especiais", nome: "15 Bacon", preco: 60.00, ingredientes: "Mussarela, bacon, tomate, orégano e azeitonas." },
-    { id: 16, categoria: "especiais", nome: "16 Mineira", preco: 60.00, ingredientes: "Mussarela, frango, milho verde, bacon, tomate, orégano e azeitonas." },
-    { id: 17, categoria: "especiais", nome: "17 Romana", preco: 60.00, ingredientes: "Mussarela, champignon, bacon, Catupiry, orégano e azeitonas." },
-    { id: 18, categoria: "especiais", nome: "18 Pepperoni", preco: 60.00, ingredientes: "Mussarela, pepperoni, orégano e azeitonas." },
-    { id: 20, categoria: "especiais", nome: "20 Baiana", preco: 60.00, ingredientes: "Mussarela, calabresa, cebola roxa, pimenta calabresa, orégano e azeitonas." },
-    { id: 21, categoria: "especiais", nome: "21 Dois Queijos", preco: 55.00, ingredientes: "Mussarela, provolone, orégano e azeitonas." },
-    { id: 22, categoria: "outros", nome: "22 Três Queijos", preco: 60.00, ingredientes: "Mussarela, provolone, parmesão, orégano e azeitonas." },
-    { id: 23, categoria: "outros", nome: "23 Quatro Queijos", preco: 65.00, ingredientes: "Mussarela, provolone, parmesão, Catupiry, orégano e azeitonas." },
-    { id: 24, categoria: "outros", nome: "24 Brócolis", preco: 65.00, ingredientes: "Mussarela, brócolis, bacon, alho frito, orégano e azeitonas." },
-    { id: 25, categoria: "outros", nome: "25 Carne Seca", preco: 64.00, ingredientes: "Mussarela, carne seca, cebola roxa, tomate, orégano e azeitonas." },
-    { id: 27, categoria: "outros", nome: "27 Americana", preco: 60.00, ingredientes: "Mussarela, presunto, bacon, tomate, cebola roxa, orégano e azeitonas." },
-    { id: 28, categoria: "outros", nome: "28 Escarola", preco: 60.00, ingredientes: "Mussarela, escarola, bacon, tomate, cebola roxa, orégano e azeitonas." }
+    { id: 8, categoria: "tradicionais", nome: "07 Provolombo", preco: 64.00, ingredientes: "Mussarela, lombo, provolone, Catupiry, orégano e azeitonas." },
+    { id: 9, categoria: "tradicionais", nome: "08 Portuguesa", preco: 60.00, ingredientes: "Mussarela, presunto, ervilha, palmito, ovo, tomate, orégano e azeitonas." },
+    { id: 10, categoria: "tradicionais", nome: "09 Palmito", preco: 60.00, ingredientes: "Mussarela, palmito, Catupiry, orégano e azeitonas." },
+    { id: 11, categoria: "tradicionais", nome: "10 Tropical", preco: 60.00, ingredientes: "Mussarela, frango, milho verde, ervilha, ovo, tomate, orégano e azeitonas." },
+    { id: 12, categoria: "tradicionais", nome: "11 Canadense", preco: 60.00, ingredientes: "Mussarela, lombo, Catupiry, orégano e azeitonas." },
+    { id: 13, categoria: "tradicionais", nome: "12 Atum", preco: 60.00, ingredientes: "Mussarela, atum, cebola roxa, orégano e azeitonas." },
+    { id: 14, categoria: "tradicionais", nome: "13 Calapiry", preco: 60.00, ingredientes: "Mussarela, calabresa, Catupiry, orégano e azeitonas." },
+    { id: 15, categoria: "especiais", nome: "14 Bacon", preco: 60.00, ingredientes: "Mussarela, bacon, tomate, orégano e azeitonas." },
+    { id: 16, categoria: "especiais", nome: "15 Mineira", preco: 60.00, ingredientes: "Mussarela, frango, milho verde, bacon, tomate, orégano e azeitonas." },
+    { id: 17, categoria: "especiais", nome: "16 Romana", preco: 60.00, ingredientes: "Mussarela, champignon, bacon, Catupiry, orégano e azeitonas." },
+    { id: 18, categoria: "especiais", nome: "17 Pepperoni", preco: 60.00, ingredientes: "Mussarela, pepperoni, orégano e azeitonas." },
+    { id: 20, categoria: "especiais", nome: "18 Baiana", preco: 60.00, ingredientes: "Mussarela, calabresa, cebola roxa, pimenta calabresa, orégano e azeitonas." },
+    { id: 21, categoria: "especiais", nome: "19 Dois Queijos", preco: 55.00, ingredientes: "Mussarela, provolone, orégano e azeitonas." },
+    { id: 22, categoria: "outros", nome: "20 Três Queijos", preco: 60.00, ingredientes: "Mussarela, provolone, parmesão, orégano e azeitonas." },
+    { id: 23, categoria: "outros", nome: "21 Quatro Queijos", preco: 65.00, ingredientes: "Mussarela, provolone, parmesão, Catupiry, orégano e azeitonas." },
+    { id: 24, categoria: "outros", nome: "22 Brócolis", preco: 65.00, ingredientes: "Mussarela, brócolis, bacon, alho frito, orégano e azeitonas." },
+    { id: 25, categoria: "outros", nome: "23 Carne Seca", preco: 64.00, ingredientes: "Mussarela, carne seca, cebola roxa, tomate, orégano e azeitonas." },
+    { id: 27, categoria: "outros", nome: "24 Americana", preco: 60.00, ingredientes: "Mussarela, presunto, bacon, tomate, cebola roxa, orégano e azeitonas." },
+    { id: 28, categoria: "outros", nome: "25 Escarola", preco: 60.00, ingredientes: "Mussarela, escarola, bacon, tomate, cebola roxa, orégano e azeitonas." }
   ];
 }
 
-// ============ INICIALIZAÇÃO ============
-// Sabores descontinuados: ficam de fora mesmo que ainda existam na API do servidor
 const SABORES_REMOVIDOS = [7, 19, 26];
 
 window.onload = async function () {
   cardapio = montarCardapio();
   renderExtras();
 
+  // conta logada?
+  try {
+    const salva = localStorage.getItem('padoca_conta_logada');
+    if (salva) contaLogada = JSON.parse(salva);
+  } catch(e){}
+  if (contaLogada) {
+    dadosCliente = { nome: contaLogada.nome, endereco: contaLogada.endereco, telefone: contaLogada.telefone, tipoCadastro: 'completo' };
+    tipoCadastro = 'completo';
+    const el = document.getElementById('conta-logada-nome');
+    if (el) el.textContent = contaLogada.nome.split(' ')[0];
+  }
+
+  // cliente antigo (localStorage padoca_cliente)
   const salvos = localStorage.getItem('padoca_cliente');
-  if (salvos) {
+  if (salvos && !contaLogada) {
     dadosCliente = JSON.parse(salvos);
-    tipoCadastro = dadosCliente.tipoCadastro;
-    entrarNoCardapio();
+    tipoCadastro = dadosCliente.tipoCadastro || 'completo';
   }
 
   await sincronizarEstadoLoja();
   await carregarIndisponiveis();
-  setInterval(sincronizarEstadoLoja, 5000);
 
-  // Tenta atualizar pelo servidor; se a API não responder ou vier vazia, mantém os dados locais
   try {
-    const res = await fetch(`${window.location.origin}/api/cardapio`);
+    const res = await fetch(`${window.PADOCA_API('')}/api/cardapio`);
     const dadosApi = await res.json();
     if (Array.isArray(dadosApi) && dadosApi.length > 0) {
       cardapio = dadosApi.map(p => ({
@@ -409,91 +537,148 @@ window.onload = async function () {
         ingredientes: p.ingredientes || (cardapio.find(c => c.id === p.id) || {}).ingredientes || ''
       }));
     }
-  } catch (e) { /* segue com o cardápio local */ }
+  } catch (e) { }
 
   cardapio = cardapio.filter(p => !SABORES_REMOVIDOS.includes(p.id));
   renderizarCardapio();
+  setInterval(sincronizarEstadoLoja, 5000);
 };
 
 async function sincronizarEstadoLoja() {
   try {
-    const res = await fetch(`${window.location.origin}/api/status`);
+    const res = await fetch(`${window.PADOCA_API('')}/api/status`);
     const data = await res.json();
     document.getElementById('aviso-fechado').classList.toggle('hidden', !!data.online);
-  } catch (e) { /* mantém o último estado conhecido */ }
+    const chip = document.getElementById('chip-status');
+    if (chip) {
+      chip.classList.toggle('offline', !data.online);
+      chip.innerHTML = `<span class="dot"></span> ${data.online ? 'Aberto' : 'Fechado'}`;
+    }
+  } catch (e) { }
   carregarPromocao();
   carregarIndisponiveis();
 }
 
-// Pizzas marcadas como indisponíveis pelo painel: ficam opacas e sem clique
 async function carregarIndisponiveis() {
   try {
-    const res = await fetch(`${window.location.origin}/api/indisponiveis`);
+    const res = await fetch(`${window.PADOCA_API('')}/api/indisponiveis`);
     const dados = await res.json();
     const nova = Array.isArray(dados) ? dados : [];
     const mudou = nova.length !== pizzasIndisponiveisIds.length || nova.some(id => !pizzasIndisponiveisIds.includes(id));
     pizzasIndisponiveisIds = nova;
     if (mudou) renderizarCardapio();
-  } catch (e) { /* mantém o último estado conhecido */ }
+  } catch (e) { }
 }
 
 async function carregarPromocao() {
   const bloco = document.getElementById('bloco-promocao');
   if (!bloco) return;
-  if (tipoCadastro === 'completo') {
-    bloco.classList.remove('locked');
-    try {
-      const res = await fetch(`${window.location.origin}/api/promocao`);
-      const data = await res.json();
-      bloco.innerHTML = `<b>Promoção exclusiva fidelidade</b><br>${data.texto}`;
-    } catch (e) {
-      bloco.innerHTML = `<b>Promoção exclusiva fidelidade</b><br>Ganhe uma bebida em compras acima de R$ 60.`;
-    }
-  } else {
-    bloco.classList.add('locked');
-    bloco.innerHTML = `<b>Promoções bloqueadas</b><br>Faça o cadastro completo para entrar no clube de benefícios.`;
+  try {
+    const res = await fetch(`${window.PADOCA_API('')}/api/promocao`);
+    const data = await res.json();
+    bloco.innerHTML = `<b>Promoção do dia</b><br>${data.texto}`;
+  } catch (e) {
+    bloco.innerHTML = `<b>Promoção do dia</b><br>Ganhe uma bebida em compras acima de R$ 60.`;
   }
 }
 
-// ============ CADASTRO ============
-function irParaCompleto() {
-  document.getElementById('tela-cadastro-simples').classList.add('hidden');
-  document.getElementById('tela-cadastro-completo').classList.remove('hidden');
+// ============ AUTH CLIENTE ============
+function setAuthTab(tab){
+  document.getElementById('auth-tab-entrar').classList.toggle('active', tab==='entrar');
+  document.getElementById('auth-tab-cadastrar').classList.toggle('active', tab==='cadastrar');
+  document.getElementById('auth-entrar').classList.toggle('hidden', tab!=='entrar');
+  document.getElementById('auth-cadastrar').classList.toggle('hidden', tab!=='cadastrar');
+}
+
+function togglePw(id, btn){
+  const inp = document.getElementById(id);
+  if (inp.type === 'password'){ inp.type='text'; btn.textContent='🙈'; }
+  else { inp.type='password'; btn.textContent='👁'; }
+}
+
+function contasClientes(){ try { return JSON.parse(localStorage.getItem('padoca_contas')||'[]'); } catch(e){ return []; } }
+function salvarContas(c){ localStorage.setItem('padoca_contas', JSON.stringify(c)); }
+
+function fazerLoginCliente(){
+  const tel = document.getElementById('login-telefone').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  if (!tel || !senha){ toast('Preencha telefone e senha.','err'); return; }
+  const conta = contasClientes().find(c => c.telefone.replace(/\D/g,'') === tel.replace(/\D/g,'') && c.senha === senha);
+  if (!conta){ toast('Telefone ou senha inválidos.','err'); return; }
+  contaLogada = conta;
+  localStorage.setItem('padoca_conta_logada', JSON.stringify(conta));
+  dadosCliente = { nome: conta.nome, endereco: conta.endereco, telefone: conta.telefone, tipoCadastro:'completo' };
   tipoCadastro = 'completo';
-}
-
-function finalizarCadastroSimples() {
-  const nome = document.getElementById('simples-nome').value.trim();
-  const endereco = document.getElementById('simples-endereco').value.trim();
-  const telefone = document.getElementById('simples-telefone').value.trim();
-  if (!nome || !endereco || !telefone) { alert("Preencha todos os campos do cadastro de entrega."); return; }
-  dadosCliente = { nome, endereco, telefone, tipoCadastro: 'simples' };
   localStorage.setItem('padoca_cliente', JSON.stringify(dadosCliente));
-  entrarNoCardapio();
+  const eln = document.getElementById('conta-logada-nome'); if (eln) eln.textContent = conta.nome.split(' ')[0];
+  toast('Bem-vindo, ' + conta.nome.split(' ')[0] + '!');
+  document.getElementById('tela-login').classList.add('hidden');
+  document.getElementById('tela-opcoes-pedido').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function finalizarCadastroCompleto() {
-  const nome = document.getElementById('comp-nome').value.trim();
-  const sobrenome = document.getElementById('comp-sobrenome').value.trim();
-  const telefone = document.getElementById('comp-telefone').value.trim();
-  const rua = document.getElementById('comp-endereco').value.trim();
-  const numero = document.getElementById('comp-numero').value.trim();
-  if (!nome || !sobrenome || !telefone || !rua || !numero) { alert("Preencha o cadastro fidelidade por completo."); return; }
-  dadosCliente = { nome, sobrenome, telefone, endereco: `${rua}, Nº ${numero}`, tipoCadastro: 'completo' };
+function fazerCadastroCliente(){
+  const nome = document.getElementById('cad2-nome').value.trim();
+  const tel = document.getElementById('cad2-telefone').value.trim();
+  const end = document.getElementById('cad2-endereco').value.trim();
+  const s1 = document.getElementById('cad2-senha').value;
+  const s2 = document.getElementById('cad2-senha2').value;
+  if (!nome || !tel || !end || !s1){ toast('Preencha todos os campos.','err'); return; }
+  if (s1.length < 4){ toast('A senha deve ter ao menos 4 caracteres.','err'); return; }
+  if (s1 !== s2){ toast('As senhas não conferem.','err'); return; }
+  const contas = contasClientes();
+  if (contas.some(c => c.telefone.replace(/\D/g,'') === tel.replace(/\D/g,''))){ toast('Já existe uma conta com este telefone. Faça login.','err'); setAuthTab('entrar'); return; }
+  const nova = { nome, telefone: tel, endereco: end, senha: s1, criadoEm: new Date().toISOString() };
+  contas.push(nova);
+  salvarContas(contas);
+  contaLogada = nova;
+  localStorage.setItem('padoca_conta_logada', JSON.stringify(nova));
+  dadosCliente = { nome, endereco: end, telefone: tel, tipoCadastro:'completo' };
+  tipoCadastro = 'completo';
   localStorage.setItem('padoca_cliente', JSON.stringify(dadosCliente));
-  entrarNoCardapio();
+  const eln2 = document.getElementById('conta-logada-nome'); if (eln2) eln2.textContent = nome.split(' ')[0];
+  toast('Conta criada com sucesso!');
+  document.getElementById('tela-login').classList.add('hidden');
+  document.getElementById('tela-opcoes-pedido').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function entrarNoCardapio() {
-  document.getElementById('tela-cadastro-simples').classList.add('hidden');
-  document.getElementById('tela-cadastro-completo').classList.add('hidden');
+function voltarLoginParaCardapio(){
+  document.getElementById('tela-login').classList.add('hidden');
   document.getElementById('tela-pedido').classList.remove('hidden');
   document.getElementById('barra-carrinho').classList.remove('hidden');
-  carregarPromocao();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ============ CADASTRO (legado) ============
+function finalizarCadastro() {
+  const nome = document.getElementById('cad-nome').value.trim();
+  const rua = document.getElementById('cad-rua').value.trim();
+  const bairro = document.getElementById('cad-bairro').value.trim();
+  const telefone = document.getElementById('cad-telefone').value.trim();
+  if (!nome || !rua || !bairro || !telefone) { toast('Preencha todos os campos do cadastro.','err'); return; }
+
+  dadosCliente = { nome, endereco: `${rua}, ${bairro}`, telefone, tipoCadastro: 'completo' };
+  localStorage.setItem('padoca_cliente', JSON.stringify(dadosCliente));
+  tipoCadastro = 'completo';
+
+  document.getElementById('tela-cadastro').classList.add('hidden');
+  document.getElementById('tela-opcoes-pedido').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function voltarDoCadastroParaCardapio() {
+  document.getElementById('tela-cadastro').classList.add('hidden');
+  document.getElementById('tela-pedido').classList.remove('hidden');
+  document.getElementById('barra-carrinho').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function limparSessaoCadastro() {
   localStorage.removeItem('padoca_cliente');
+  localStorage.removeItem('padoca_conta_logada');
+  contaLogada = null;
+  dadosCliente = {};
   location.reload();
 }
 
@@ -544,10 +729,9 @@ function renderizarCardapio() {
   });
 }
 
-// ============ TELA DE DETALHE (dinâmica p/ as 28 pizzas) ============
 function abrirPaginaIndividualEstatica(id) {
   const pizza = cardapio.find(p => p.id === id);
-  if (!pizza) { alert("Não foi possível carregar os detalhes desta pizza."); return; }
+  if (!pizza) { toast('Não foi possível carregar os detalhes desta pizza.','err'); return; }
   pizzaAberta = pizza;
 
   document.getElementById('det-badge').innerText = `Sabor #${String(id).padStart(2, '0')}`;
@@ -586,6 +770,7 @@ function executarInclusaoCarrinhoFluxo(pizza) {
     });
     atualizarCarrinhoVisual();
     fecharPaginaIndividual();
+    toast('Pizza adicionada ao carrinho');
     return;
   }
 
@@ -608,18 +793,22 @@ function executarInclusaoCarrinhoFluxo(pizza) {
     metadesSelecionadasTemporarias = [];
     document.getElementById('instrucao-selecao').innerText = "Arraste para o lado e escolha suas pizzas";
     atualizarCarrinhoVisual();
+    toast('Pizza meio a meio adicionada');
   } else {
     renderizarCardapio();
     document.getElementById('instrucao-selecao').innerText = "Escolha a 2ª metade agora";
+    toast('Selecione a segunda metade');
   }
 }
 
 function limparCarrinho() {
+  if (carrinhoItens.length === 0){ toast('Carrinho já está vazio.','err'); return; }
   carrinhoItens = [];
   metadesSelecionadasTemporarias = [];
   document.getElementById('instrucao-selecao').innerText = "Arraste para o lado e escolha suas pizzas";
   atualizarCarrinhoVisual();
   renderizarCardapio();
+  toast('Carrinho limpo');
 }
 
 function atualizarCarrinhoVisual() {
@@ -644,7 +833,7 @@ function atualizarCarrinhoVisual() {
   renderizarCardapio();
 }
 
-// ============ EXTRAS (100g) ============
+// ============ EXTRAS ============
 const listaExtras = [
   { id: 'frango', nome: 'Frango', preco: 5.00 },
   { id: 'mussarela', nome: 'Mussarela', preco: 7.00 },
@@ -685,21 +874,42 @@ function toggleExtra(id) {
 
 // ============ FLUXO DE TELAS ============
 function avancarParaOpcoes() {
-  if (carrinhoItens.length === 0) { alert("Seu carrinho está vazio. Selecione pelo menos uma pizza para avançar."); return; }
+  if (carrinhoItens.length === 0) { toast('Seu carrinho está vazio. Selecione pelo menos uma pizza.','err'); return; }
   document.getElementById('tela-pedido').classList.add('hidden');
   document.getElementById('barra-carrinho').classList.add('hidden');
-  document.getElementById('tela-opcoes-pedido').classList.remove('hidden');
+
+  // Login/cadastro antes do pagamento
+  if (!contaLogada && !(dadosCliente && dadosCliente.nome)) {
+    document.getElementById('tela-login').classList.remove('hidden');
+  } else {
+    if (contaLogada) {
+      dadosCliente = { nome: contaLogada.nome, endereco: contaLogada.endereco, telefone: contaLogada.telefone, tipoCadastro:'completo' };
+    }
+    document.getElementById('tela-opcoes-pedido').classList.remove('hidden');
+  }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function voltarParaCardapio() {
   document.getElementById('tela-opcoes-pedido').classList.add('hidden');
+  document.getElementById('tela-login').classList.add('hidden');
   document.getElementById('tela-pedido').classList.remove('hidden');
   document.getElementById('barra-carrinho').classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Total final (pizzas + borda + extras) — mesma conta usada no envio do pedido
+function voltarParaNovoPedido(){
+  idPedidoAtivo = null;
+  carrinhoItens = [];
+  metadesSelecionadasTemporarias = [];
+  extrasSelecionados = [];
+  atualizarCarrinhoVisual();
+  document.getElementById('tela-status-pedido').classList.add('hidden');
+  document.getElementById('tela-pedido').classList.remove('hidden');
+  document.getElementById('barra-carrinho').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
 function calcularTotalFinal() {
   const bordaTipo = document.getElementById('borda-selecao').value;
   const valorBordaAdicional = (bordaTipo === 'catupiry' || bordaTipo === 'mussarela') ? 9 : 0;
@@ -731,7 +941,6 @@ function aoMudarPrecisaTroco() {
   if (precisa === 'sim') document.getElementById('troco-valor').focus();
 }
 
-// Aceita "100", "100,50", "100.50" e "1.250,00"
 function lerValorTroco() {
   let t = document.getElementById('troco-valor').value.replace(/[^\d,.]/g, '');
   if (t.includes(',')) t = t.replace(/\./g, '').replace(',', '.');
@@ -764,8 +973,7 @@ function atualizarInfoTroco() {
 async function confirmarEnviarPedidoFinal() {
   const formaPagamento = document.getElementById('pagamento').value;
   if (formaPagamento === 'selecione' || !formaPagamento) {
-    alert("Selecione uma forma de pagamento válida para finalizar o pedido.");
-    return;
+    toast('Selecione uma forma de pagamento válida.','err'); return;
   }
 
   const bordaTipo = document.getElementById('borda-selecao').value;
@@ -783,7 +991,6 @@ async function confirmarEnviarPedidoFinal() {
   const detalheFinalPizzas = carrinhoItens.map(item => `${item.nomeFormatado} (${textBorda})`).join(' + ');
   const valorSomaFinal = carrinhoItens.reduce((acc, item) => acc + (item.precoBase + valorBordaAdicional), 0) + valorExtras;
 
-  // Dinheiro: pergunta de troco é obrigatória
   let textoPagamento = formaPagamento;
   if (formaPagamento === 'Dinheiro') {
     const blocoTroco = document.getElementById('bloco-troco');
@@ -791,7 +998,7 @@ async function confirmarEnviarPedidoFinal() {
     if (!precisa) {
       blocoTroco.classList.add('invalido');
       blocoTroco.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      alert("Informe se você precisa de troco para finalizar o pedido.");
+      toast('Informe se você precisa de troco.','err');
       return;
     }
     if (precisa === 'nao') {
@@ -802,7 +1009,7 @@ async function confirmarEnviarPedidoFinal() {
         blocoTroco.classList.add('invalido');
         blocoTroco.scrollIntoView({ behavior: 'smooth', block: 'center' });
         document.getElementById('troco-valor').focus();
-        alert(`Informe para quanto você precisa de troco. O valor deve ser maior que o total (R$ ${valorSomaFinal.toFixed(2)}).`);
+        toast('Informe para quanto você precisa de troco.','err');
         return;
       }
       const devolver = Math.round((notaCliente - valorSomaFinal) * 100) / 100;
@@ -827,18 +1034,19 @@ async function confirmarEnviarPedidoFinal() {
   };
 
   try {
-    const res = await fetch(`${window.location.origin}/api/pedidos/novo`, {
+    const res = await fetch(`${window.PADOCA_API('')}/api/pedidos/novo`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
     const data = await res.json();
-    if (data.success) { idPedidoAtivo = data.pedidoId; extrasSelecionados = []; abrirPainelNotificacao(); }
-    else { alert("Ocorreu um erro no servidor ao processar o pedido."); }
+    if (data.success) { idPedidoAtivo = data.pedidoId; extrasSelecionados = []; abrirPainelNotificacao(); toast('Pedido enviado com sucesso!'); }
+    else { toast('Erro no servidor ao processar o pedido.','err'); }
   } catch (e) {
     idPedidoAtivo = Math.floor(Math.random() * 9000) + 1000;
     extrasSelecionados = [];
     abrirPainelNotificacao();
+    toast('Pedido recebido (modo offline).');
   }
 }
 
@@ -854,7 +1062,7 @@ async function checarStatusServidor() {
   if (!idPedidoAtivo) return;
   const msgBox = document.getElementById('status-box-mensagem');
   try {
-    const res = await fetch(`${window.location.origin}/api/pedidos/status/${idPedidoAtivo}`);
+    const res = await fetch(`${window.PADOCA_API('')}/api/pedidos/status/${idPedidoAtivo}`);
     const data = await res.json();
     if (data.status === 'pendente') {
       msgBox.innerHTML = `<div class="status-badge status-pending">Aguardando a pizzaria aceitar o pedido...</div>`;

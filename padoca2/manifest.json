@@ -1,0 +1,14 @@
+{
+  "name": "Padoca Disk Pizzas",
+  "short_name": "Padoca",
+  "description": "Pizzas artesanais entregues na sua casa.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0a07",
+  "theme_color": "#e8531f",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/img/img1.jpg", "sizes": "192x192", "type": "image/jpeg" },
+    { "src": "/img/img1.jpg", "sizes": "512x512", "type": "image/jpeg" }
+  ]
+}

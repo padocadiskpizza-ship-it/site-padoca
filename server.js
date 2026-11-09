@@ -7,6 +7,30 @@ const PORT = 8080; // Porta estável de alto desempenho da Padoca
 app.use(express.json());
 
 // ==========================================
+// 🌐 CORS — permite que os sites Netlify (e outros domínios) chamem a API
+// ==========================================
+const DOMINIOS_PERMITIDOS = [
+    'https://padocadiskpizza.com.br',
+    'https://www.padocadiskpizza.com.br',
+    'https://painel.padocadiskpizza.com.br',
+    'https://padocamelhorpizza.netlify.app',
+    'http://localhost:8080',
+    'http://127.0.0.1:8080'
+];
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin && DOMINIOS_PERMITIDOS.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Vary', 'Origin');
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    if (req.method === 'OPTIONS') return res.status(204).end();
+    next();
+});
+
+// ==========================================
 // 🔒 Impede baixar arquivos internos pelo túnel (server.js tem a senha, dados/ tem os clientes)
 // ==========================================
 app.use((req, res, next) => {
@@ -179,19 +203,24 @@ app.post('/api/push/desinscrever', (req, res) => {
 });
 
 let promocaoAtual = "Ganhe uma bebida na compra de duas pizzas inteiras!";
-const SENHA_FIXA_CADASTRO = "0905";
+const SENHA_FIXA_CADASTRO = "170923";
 
 function removerEmojis(texto) {
     if (typeof texto !== 'string') return texto;
     return texto.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu, '');
 }
 
-// Middleware sanitizador de segurança contra emojis
+// Sanitização de segurança: remove emojis e tags HTML (anti-XSS) de todos os campos de texto
+function sanitizarTextoSeguro(texto) {
+    if (typeof texto !== 'string') return texto;
+    return removerEmojis(texto).replace(/<[^>]*>/g, '').replace(/javascript:/gi, '');
+}
+
 app.use((req, res, next) => {
     if (req.path.includes('/api/cadastro') || req.path === '/api/status') return next();
     if (req.body) {
         for (let chave in req.body) {
-            if (typeof req.body[chave] === 'string') req.body[chave] = removerEmojis(req.body[chave]);
+            if (typeof req.body[chave] === 'string') req.body[chave] = sanitizarTextoSeguro(req.body[chave]);
         }
     }
     next();
@@ -208,25 +237,25 @@ const cardapio = [
     { id: 4, categoria: "mais-pedidas", nome: "04 Presunto", preco: 55.00, ingredientes: "Mussarela, presunto, tomate, orégano e azeitonas." },
     { id: 5, categoria: "mais-pedidas", nome: "05 Frango c/ Catupiry", preco: 60.00, ingredientes: "Mussarela, frango, Catupiry, orégano e azeitonas." },
     { id: 6, categoria: "mais-pedidas", nome: "06 Frango Bacon", preco: 64.00, ingredientes: "Mussarela, frango, bacon, Catupiry, orégano e azeitonas." },
-    { id: 8, categoria: "tradicionais", nome: "08 Provolombo", preco: 64.00, ingredientes: "Mussarela, lombo, provolone, Catupiry, orégano e azeitonas." },
-    { id: 9, categoria: "tradicionais", nome: "09 Portuguesa", preco: 60.00, ingredientes: "Mussarela, presunto, ervilha, palmito, ovo, tomate, orégano e azeitonas." },
-    { id: 10, categoria: "tradicionais", nome: "10 Palmito", preco: 60.00, ingredientes: "Mussarela, palmito, Catupiry, orégano e azeitonas." },
-    { id: 11, categoria: "tradicionais", nome: "11 Tropical", preco: 60.00, ingredientes: "Mussarela, frango, milho verde, ervilha, ovo, tomate, orégano e azeitonas." },
-    { id: 12, categoria: "tradicionais", nome: "12 Canadense", preco: 60.00, ingredientes: "Mussarela, lombo, Catupiry, orégano e azeitonas." },
-    { id: 13, categoria: "tradicionais", nome: "13 Atum", preco: 60.00, ingredientes: "Mussarela, atum, cebola roxa, orégano e azeitonas." },
-    { id: 14, categoria: "tradicionais", nome: "14 Calapiry", preco: 60.00, ingredientes: "Mussarela, calabresa, Catupiry, orégano e azeitonas." },
-    { id: 15, categoria: "especiais", nome: "15 Bacon", preco: 60.00, ingredientes: "Mussarela, bacon, tomate, orégano e azeitonas." },
-    { id: 16, categoria: "especiais", nome: "16 Mineira", preco: 60.00, ingredientes: "Mussarela, frango, milho verde, bacon, tomate, orégano e azeitonas." },
-    { id: 17, categoria: "especiais", nome: "17 Romana", preco: 60.00, ingredientes: "Mussarela, champignon, bacon, Catupiry, orégano e azeitonas." },
-    { id: 18, categoria: "especiais", nome: "18 Pepperoni", preco: 60.00, ingredientes: "Mussarela, pepperoni, orégano e azeitonas." },
-    { id: 20, categoria: "especiais", nome: "20 Baiana", preco: 60.00, ingredientes: "Mussarela, calabresa, cebola roxa, pimenta calabresa, orégano e azeitonas." },
-    { id: 21, categoria: "especiais", nome: "21 Dois Queijos", preco: 55.00, ingredientes: "Mussarela, provolone, orégano e azeitonas." },
-    { id: 22, categoria: "outros", nome: "22 Três Queijos", preco: 60.00, ingredientes: "Mussarela, provolone, parmesão, orégano e azeitonas." },
-    { id: 23, categoria: "outros", nome: "23 Quatro Queijos", preco: 65.00, ingredientes: "Mussarela, provolone, parmesão, Catupiry, orégano e azeitonas." },
-    { id: 24, categoria: "outros", nome: "24 Brócolis", preco: 65.00, ingredientes: "Mussarela, brócolis, bacon, alho frito, orégano e azeitonas." },
-    { id: 25, categoria: "outros", nome: "25 Carne Seca", preco: 64.00, ingredientes: "Mussarela, carne seca, cebola roxa, tomate, orégano e azeitonas." },
-    { id: 27, categoria: "outros", nome: "27 Americana", preco: 60.00, ingredientes: "Mussarela, presunto, bacon, tomate, cebola roxa, orégano e azeitonas." },
-    { id: 28, categoria: "outros", nome: "28 Escarola", preco: 60.00, ingredientes: "Mussarela, escarola, bacon, tomate, cebola roxa, orégano e azeitonas." }
+    { id: 8, categoria: "tradicionais", nome: "07 Provolombo", preco: 64.00, ingredientes: "Mussarela, lombo, provolone, Catupiry, orégano e azeitonas." },
+    { id: 9, categoria: "tradicionais", nome: "08 Portuguesa", preco: 60.00, ingredientes: "Mussarela, presunto, ervilha, palmito, ovo, tomate, orégano e azeitonas." },
+    { id: 10, categoria: "tradicionais", nome: "09 Palmito", preco: 60.00, ingredientes: "Mussarela, palmito, Catupiry, orégano e azeitonas." },
+    { id: 11, categoria: "tradicionais", nome: "10 Tropical", preco: 60.00, ingredientes: "Mussarela, frango, milho verde, ervilha, ovo, tomate, orégano e azeitonas." },
+    { id: 12, categoria: "tradicionais", nome: "11 Canadense", preco: 60.00, ingredientes: "Mussarela, lombo, Catupiry, orégano e azeitonas." },
+    { id: 13, categoria: "tradicionais", nome: "12 Atum", preco: 60.00, ingredientes: "Mussarela, atum, cebola roxa, orégano e azeitonas." },
+    { id: 14, categoria: "tradicionais", nome: "13 Calapiry", preco: 60.00, ingredientes: "Mussarela, calabresa, Catupiry, orégano e azeitonas." },
+    { id: 15, categoria: "especiais", nome: "14 Bacon", preco: 60.00, ingredientes: "Mussarela, bacon, tomate, orégano e azeitonas." },
+    { id: 16, categoria: "especiais", nome: "15 Mineira", preco: 60.00, ingredientes: "Mussarela, frango, milho verde, bacon, tomate, orégano e azeitonas." },
+    { id: 17, categoria: "especiais", nome: "16 Romana", preco: 60.00, ingredientes: "Mussarela, champignon, bacon, Catupiry, orégano e azeitonas." },
+    { id: 18, categoria: "especiais", nome: "17 Pepperoni", preco: 60.00, ingredientes: "Mussarela, pepperoni, orégano e azeitonas." },
+    { id: 20, categoria: "especiais", nome: "18 Baiana", preco: 60.00, ingredientes: "Mussarela, calabresa, cebola roxa, pimenta calabresa, orégano e azeitonas." },
+    { id: 21, categoria: "especiais", nome: "19 Dois Queijos", preco: 55.00, ingredientes: "Mussarela, provolone, orégano e azeitonas." },
+    { id: 22, categoria: "outros", nome: "20 Três Queijos", preco: 60.00, ingredientes: "Mussarela, provolone, parmesão, orégano e azeitonas." },
+    { id: 23, categoria: "outros", nome: "21 Quatro Queijos", preco: 65.00, ingredientes: "Mussarela, provolone, parmesão, Catupiry, orégano e azeitonas." },
+    { id: 24, categoria: "outros", nome: "22 Brócolis", preco: 65.00, ingredientes: "Mussarela, brócolis, bacon, alho frito, orégano e azeitonas." },
+    { id: 25, categoria: "outros", nome: "23 Carne Seca", preco: 64.00, ingredientes: "Mussarela, carne seca, cebola roxa, tomate, orégano e azeitonas." },
+    { id: 27, categoria: "outros", nome: "24 Americana", preco: 60.00, ingredientes: "Mussarela, presunto, bacon, tomate, cebola roxa, orégano e azeitonas." },
+    { id: 28, categoria: "outros", nome: "25 Escarola", preco: 60.00, ingredientes: "Mussarela, escarola, bacon, tomate, cebola roxa, orégano e azeitonas." }
 ];
 
 // ==========================================
