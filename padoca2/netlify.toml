@@ -4,18 +4,3 @@
 
 [functions]
   node_bundler = "esbuild"
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
-  status = 200
-
-[[redirects]]
-  from = "https://painel.padocadiskpizza.com.br/*"
-  to = "/painel.html"
-  status = 200
-
-[[redirects]]
-  from = "https://clientes.padocadiskpizza.com.br/*"
-  to = "/clientes.html"
-  status = 200
