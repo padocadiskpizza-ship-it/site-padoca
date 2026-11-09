@@ -1,6 +1,5 @@
 // Netlify Edge Function: roteia por host (subdomínio) para a página correta.
-// Roda no edge (Deno) antes dos redirects estáticos, garantindo que cada
-// subdomínio sirva a página certa.
+// Roda no edge (Deno) antes dos redirects estáticos.
 
 export default async (request, context) => {
   const host = (request.headers.get("host") || "").toLowerCase().replace(/:\d+$/, "");
@@ -35,4 +34,5 @@ export default async (request, context) => {
 
 export const config = {
   path: "/*",
+  excludedPath: ["/api/*", "/.netlify/*", "/img/*", "/manifest.json", "/sw.js", "/config.js"],
 };

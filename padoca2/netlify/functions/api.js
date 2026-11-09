@@ -218,6 +218,7 @@ exports.handler = async (event) => {
   const path = getPath(event);
 
   try {
+    console.log('API request:', method, path);
     // ---------- STATUS ----------
     if (path === '/api/status' && method === 'GET') {
       return json(200, { online: await getSiteOnline() });
@@ -378,6 +379,27 @@ exports.handler = async (event) => {
       const subs = (await getPushSubs()).filter(i => i.endpoint !== endpoint);
       await setPushSubs(subs);
       return json(200, { success: true });
+    }
+
+    // ---------- DEBUG ----------
+    if (path === '/api/debug' && method === 'GET') {
+      const envInfo = {
+        NETLIFY: process.env.NETLIFY || null,
+        NETLIFY_BLOBS_CONTEXT: !!process.env.NETLIFY_BLOBS_CONTEXT,
+        NETLIFY_SITE_ID: !!process.env.NETLIFY_SITE_ID,
+        NETLIFY_AUTH_TOKEN: !!process.env.NETLIFY_AUTH_TOKEN,
+        useBlobs: useBlobs()
+      };
+      let blobTest = 'not tested';
+      try {
+        const s = getStore('padoca');
+        await s.setJSON('__test__', { ok: true, ts: Date.now() });
+        const v = await s.get('__test__', { type: 'json' });
+        blobTest = v && v.ok ? 'OK (read/write works)' : 'FAIL (read mismatch)';
+      } catch (e) {
+        blobTest = 'ERROR: ' + (e.message || e);
+      }
+      return json(200, { env: envInfo, blobTest });
     }
 
     return json(404, { error: 'Rota não encontrada: ' + path });
