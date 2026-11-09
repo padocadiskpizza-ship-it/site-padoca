@@ -2,7 +2,6 @@ const { getStore } = require('@netlify/blobs');
 
 // ============================================================
 // PADOCA DISK PIZZAS - API (Netlify Function)
-// Substitui o server.js (Express) para rodar 100% no Netlify.
 // ============================================================
 
 const CARDAPPIO = [
@@ -36,6 +35,10 @@ const CARDAPPIO = [
 const SENHA_CADASTRO = process.env.SENHA_CADASTRO || "170923";
 const SENHA_PAINEL = process.env.SENHA_PAINEL || "Padoca";
 
+// Credenciais do Netlify Blobs (configuradas manualmente)
+const BLOB_SITE_ID = process.env.NETLIFY_SITE_ID || '6ac65669-5615-4a3b-a3bc-5bab44b15b45';
+const BLOB_TOKEN = process.env.NETLIFY_AUTH_TOKEN || 'nfp_B1TfFhhBiCerih4zLdyJ5uYZWNcxZdCea2aa';
+
 function removerEmojis(texto) {
   if (typeof texto !== 'string') return texto;
   return texto.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu, '');
@@ -49,88 +52,70 @@ function chaveCliente(o) {
   return `${String(o.nome || '').trim().toLowerCase()}|${String(o.telefone || '').replace(/\D/g, '')}`;
 }
 
-const fs = require('fs');
-const path = require('path');
+// Armazenamento em memória (fallback quando Blobs não funciona)
+let memoria = {
+  siteOnline: true,
+  promocao: "Ganhe uma bebida na compra de duas pizzas inteiras!",
+  indisponiveis: [],
+  pedidos: [],
+  proximoId: 1,
+  vapid: null,
+  pushSubs: []
+};
 
-// Armazenamento híbrido: Netlify Blobs em produção, filesystem em dev local.
-function useBlobs() {
-  return !!(process.env.NETLIFY_BLOBS_CONTEXT || (process.env.NETLIFY_SITE_ID && process.env.NETLIFY_AUTH_TOKEN) || process.env.NETLIFY);
-}
-
-function fsPath(key) {
-  const dir = path.join(process.cwd(), 'dados');
-  try { fs.mkdirSync(dir, { recursive: true }); } catch (e) {}
-  return path.join(dir, key + '.json');
+function getBlobStore() {
+  try {
+    return getStore({ name: 'padoca', siteID: BLOB_SITE_ID, token: BLOB_TOKEN });
+  } catch (e) {
+    console.error('Falha ao criar store:', e.message);
+    return null;
+  }
 }
 
 async function getJSON(key, fallback) {
-  // Tenta Blobs primeiro se disponível
-  if (useBlobs()) {
-    try {
-      const s = getStore('padoca');
-      const v = await s.get(key, { type: 'json' });
-      return v == null ? fallback : v;
-    } catch (e) {
-      // cai para filesystem
-    }
-  }
+  // Tenta Blobs primeiro
   try {
-    const raw = fs.readFileSync(fsPath(key), 'utf8');
-    return JSON.parse(raw);
-  } catch (e) { return fallback; }
+    const s = getBlobStore();
+    if (s) {
+      const v = await s.get(key, { type: 'json' });
+      if (v != null) return v;
+    }
+  } catch (e) {
+    console.error('Blobs get error:', e.message);
+  }
+  // Fallback: memória
+  if (memoria[key] !== undefined) return memoria[key];
+  return fallback;
 }
 
 async function setJSON(key, value) {
-  if (useBlobs()) {
-    try {
-      const s = getStore('padoca');
-      await s.setJSON(key, value);
-      return;
-    } catch (e) {
-      // cai para filesystem
-    }
-  }
+  // Tenta Blobs primeiro
   try {
-    const dir = path.dirname(fsPath(key));
-    fs.mkdirSync(dir, { recursive: true });
-    const tmp = fsPath(key) + '.tmp';
-    fs.writeFileSync(tmp, JSON.stringify(value));
-    fs.renameSync(tmp, fsPath(key));
-  } catch (e) { console.error('Falha ao salvar', key, e.message); }
+    const s = getBlobStore();
+    if (s) {
+      await s.setJSON(key, value);
+      memoria[key] = value; // também salva em memória
+      return;
+    }
+  } catch (e) {
+    console.error('Blobs set error:', e.message);
+  }
+  // Fallback: memória
+  memoria[key] = value;
 }
 
-async function getSiteOnline() {
-  const v = await getJSON('siteOnline', null);
-  return v == null ? true : !!v;
-}
-async function setSiteOnline(v) {
-  await setJSON('siteOnline', !!v);
-}
+// Wrappers para chaves específicas
+async function getSiteOnline() { const v = await getJSON('siteOnline', null); return v == null ? true : !!v; }
+async function setSiteOnline(v) { await setJSON('siteOnline', !!v); }
 
-async function getPromocao() {
-  const v = await getJSON('promocao', null);
-  return v == null ? "Ganhe uma bebida na compra de duas pizzas inteiras!" : v;
-}
-async function setPromocao(t) {
-  await setJSON('promocao', t);
-}
+async function getPromocao() { const v = await getJSON('promocao', null); return v == null ? "Ganhe uma bebida na compra de duas pizzas inteiras!" : v; }
+async function setPromocao(t) { await setJSON('promocao', t); }
 
-async function getIndisponiveis() {
-  const v = await getJSON('indisponiveis', null);
-  return Array.isArray(v) ? v : [];
-}
-async function setIndisponiveis(v) {
-  await setJSON('indisponiveis', v);
-}
+async function getIndisponiveis() { const v = await getJSON('indisponiveis', null); return Array.isArray(v) ? v : []; }
+async function setIndisponiveis(v) { await setJSON('indisponiveis', v); }
 
-async function getPedidosData() {
-  const v = await getJSON('pedidos', null);
-  if (v && Array.isArray(v.pedidos)) return v;
-  return { pedidos: [], proximoId: 1 };
-}
-async function setPedidosData(v) {
-  await setJSON('pedidos', v);
-}
+async function getPedidosData() { const v = await getJSON('pedidos', null); if (v && Array.isArray(v.pedidos)) return v; return { pedidos: [], proximoId: 1 }; }
+async function setPedidosData(v) { await setJSON('pedidos', v); }
 
 let webpush = null;
 try { webpush = require('web-push'); } catch (e) { webpush = null; }
@@ -146,13 +131,8 @@ async function getVapid() {
   }
   return v;
 }
-async function getPushSubs() {
-  const v = await getJSON('pushSubs', null);
-  return Array.isArray(v) ? v : [];
-}
-async function setPushSubs(v) {
-  await setJSON('pushSubs', v);
-}
+async function getPushSubs() { const v = await getJSON('pushSubs', null); return Array.isArray(v) ? v : []; }
+async function setPushSubs(v) { await setJSON('pushSubs', v); }
 
 async function avisarPainelPorPush(pedido) {
   if (!webpush) return;
@@ -160,10 +140,7 @@ async function avisarPainelPorPush(pedido) {
   if (!vapid) return;
   const subs = await getPushSubs();
   if (subs.length === 0) return;
-  const payload = JSON.stringify({
-    titulo: '🍕 Novo pedido na Padoca!',
-    corpo: `${pedido.nome || 'Cliente'} ${pedido.sobrenome || ''} — pedido #${pedido.id}`.trim()
-  });
+  const payload = JSON.stringify({ titulo: '🍕 Novo pedido na Padoca!', corpo: `${pedido.nome || 'Cliente'} ${pedido.sobrenome || ''} — pedido #${pedido.id}`.trim() });
   const sobreviventes = [];
   for (const inscricao of subs) {
     try {
@@ -173,22 +150,11 @@ async function avisarPainelPorPush(pedido) {
       if (e.statusCode !== 404 && e.statusCode !== 410) sobreviventes.push(inscricao);
     }
   }
-  if (sobreviventes.length !== subs.length) {
-    await setPushSubs(sobreviventes);
-  }
+  if (sobreviventes.length !== subs.length) await setPushSubs(sobreviventes);
 }
 
 function json(statusCode, body) {
-  return {
-    statusCode,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type,Authorization'
-    },
-    body: JSON.stringify(body)
-  };
+  return { statusCode, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' }, body: JSON.stringify(body) };
 }
 
 function parseBody(event) {
@@ -196,33 +162,42 @@ function parseBody(event) {
 }
 
 function getPath(event) {
-  // event.path pode ser "/.netlify/functions/api/api/status" ou "/api/status"
   let p = event.path || '';
   p = p.replace(/^\/\.netlify\/functions\/api/, '');
-  // também remove prefixo duplicado
   if (!p.startsWith('/')) p = '/' + p;
   return p;
 }
 
 exports.handler = async (event) => {
-  // CORS preflight
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type,Authorization'
-    }, body: '' };
+    return { statusCode: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' }, body: '' };
   }
 
   const method = event.httpMethod;
   const path = getPath(event);
+  console.log('API:', method, path);
 
   try {
-    console.log('API request:', method, path);
-    // ---------- STATUS ----------
-    if (path === '/api/status' && method === 'GET') {
-      return json(200, { online: await getSiteOnline() });
+    // ---------- DEBUG ----------
+    if (path === '/api/debug' && method === 'GET') {
+      let blobTest = 'not tested';
+      try {
+        const s = getBlobStore();
+        if (s) {
+          await s.setJSON('__test__', { ok: true, ts: Date.now() });
+          const v = await s.get('__test__', { type: 'json' });
+          blobTest = v && v.ok ? 'OK (read/write works)' : 'FAIL (read mismatch)';
+        } else {
+          blobTest = 'Store is null';
+        }
+      } catch (e) {
+        blobTest = 'ERROR: ' + (e.message || e);
+      }
+      return json(200, { blobTest, memory: { siteOnline: memoria.siteOnline, pedidos: memoria.pedidos.length } });
     }
+
+    // ---------- STATUS ----------
+    if (path === '/api/status' && method === 'GET') return json(200, { online: await getSiteOnline() });
     if (path === '/api/status' && method === 'POST') {
       const b = parseBody(event);
       await setSiteOnline(!!b.online);
@@ -230,9 +205,7 @@ exports.handler = async (event) => {
     }
 
     // ---------- PROMOÇÃO ----------
-    if (path === '/api/promocao' && method === 'GET') {
-      return json(200, { texto: await getPromocao() });
-    }
+    if (path === '/api/promocao' && method === 'GET') return json(200, { texto: await getPromocao() });
     if (path === '/api/promocao' && method === 'POST') {
       const b = parseBody(event);
       await setPromocao(sanitizar(b.texto || ''));
@@ -240,14 +213,10 @@ exports.handler = async (event) => {
     }
 
     // ---------- CARDÁPIO ----------
-    if (path === '/api/cardapio' && method === 'GET') {
-      return json(200, CARDAPPIO);
-    }
+    if (path === '/api/cardapio' && method === 'GET') return json(200, CARDAPPIO);
 
     // ---------- INDISPONÍVEIS ----------
-    if (path === '/api/indisponiveis' && method === 'GET') {
-      return json(200, await getIndisponiveis());
-    }
+    if (path === '/api/indisponiveis' && method === 'GET') return json(200, await getIndisponiveis());
     if (path === '/api/indisponiveis/alternar' && method === 'POST') {
       const b = parseBody(event);
       const id = parseInt(b.id);
@@ -288,11 +257,7 @@ exports.handler = async (event) => {
       const b = parseBody(event);
       const itens = (Array.isArray(b.itens) ? b.itens : []).slice(0, 50).map(i => {
         i = i || {};
-        return {
-          tipo: i.tipo === 'metade' ? 'metade' : 'inteira',
-          sabores: (Array.isArray(i.sabores) ? i.sabores : []).slice(0, 2).map(s => sanitizar(String(s))),
-          preco: parseFloat(i.preco) || 0
-        };
+        return { tipo: i.tipo === 'metade' ? 'metade' : 'inteira', sabores: (Array.isArray(i.sabores) ? i.sabores : []).slice(0, 2).map(s => sanitizar(String(s))), preco: parseFloat(i.preco) || 0 };
       });
       const data = await getPedidosData();
       const agora = new Date();
@@ -317,7 +282,6 @@ exports.handler = async (event) => {
       };
       data.pedidos.push(novoPedido);
       await setPedidosData(data);
-      // push (não bloqueia)
       avisarPainelPorPush(novoPedido).catch(() => {});
       return json(200, { success: true, pedidoId: novoPedido.id });
     }
@@ -379,27 +343,6 @@ exports.handler = async (event) => {
       const subs = (await getPushSubs()).filter(i => i.endpoint !== endpoint);
       await setPushSubs(subs);
       return json(200, { success: true });
-    }
-
-    // ---------- DEBUG ----------
-    if (path === '/api/debug' && method === 'GET') {
-      const envInfo = {
-        NETLIFY: process.env.NETLIFY || null,
-        NETLIFY_BLOBS_CONTEXT: !!process.env.NETLIFY_BLOBS_CONTEXT,
-        NETLIFY_SITE_ID: !!process.env.NETLIFY_SITE_ID,
-        NETLIFY_AUTH_TOKEN: !!process.env.NETLIFY_AUTH_TOKEN,
-        useBlobs: useBlobs()
-      };
-      let blobTest = 'not tested';
-      try {
-        const s = getStore('padoca');
-        await s.setJSON('__test__', { ok: true, ts: Date.now() });
-        const v = await s.get('__test__', { type: 'json' });
-        blobTest = v && v.ok ? 'OK (read/write works)' : 'FAIL (read mismatch)';
-      } catch (e) {
-        blobTest = 'ERROR: ' + (e.message || e);
-      }
-      return json(200, { env: envInfo, blobTest });
     }
 
     return json(404, { error: 'Rota não encontrada: ' + path });
