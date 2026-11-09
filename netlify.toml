@@ -4,3 +4,34 @@
 
 [functions]
   node_bundler = "esbuild"
+
+# Subdomínio painel → painel.html
+[[redirects]]
+  from = "/*"
+  to = "/painel.html"
+  status = 200
+  conditions = { Host = ["painel.padocadiskpizza.com.br"] }
+
+# Subdomínio clientes → clientes.html
+[[redirects]]
+  from = "/*"
+  to = "/clientes.html"
+  status = 200
+  conditions = { Host = ["clientes.padocadiskpizza.com.br"] }
+
+# Paths curtos
+[[redirects]]
+  from = "/painel"
+  to = "/painel.html"
+  status = 200
+
+[[redirects]]
+  from = "/clientes"
+  to = "/clientes.html"
+  status = 200
+
+# API → Function
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
