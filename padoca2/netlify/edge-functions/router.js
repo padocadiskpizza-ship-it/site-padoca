@@ -19,6 +19,13 @@ export default async (request, context) => {
     }
   }
 
+  // Subdomínio site (apresentação) → site.html
+  if (host === "site.padocadiskpizza.com.br") {
+    if (url.pathname === "/" || url.pathname === "") {
+      return context.rewrite("/site.html");
+    }
+  }
+
   // Paths curtos no domínio principal
   if (host === "padocadiskpizza.com.br" || host === "www.padocadiskpizza.com.br") {
     if (url.pathname === "/painel") {
