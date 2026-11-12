@@ -259,7 +259,10 @@ export default {
       return handleAPI(request, env);
     }
 
-    // Arquivos estáticos (deixar o Cloudflare servir)
+    // Arquivos estáticos (servir via ASSETS binding)
+    if (env.ASSETS) {
+      return env.ASSETS.fetch(request);
+    }
     return fetch(request);
   }
 };
