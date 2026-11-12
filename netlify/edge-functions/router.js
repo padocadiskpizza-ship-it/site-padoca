@@ -4,6 +4,7 @@
 export default async (request, context) => {
   const host = (request.headers.get("host") || "").toLowerCase().replace(/:\d+$/, "");
   const url = new URL(request.url);
+  console.log("Edge router:", host, url.pathname);
 
   // Subdomínio painel → painel.html
   if (host === "painel.padocadiskpizza.com.br") {
