@@ -237,12 +237,8 @@ export default {
     const host = (url.hostname || '').toLowerCase();
 
     // Roteamento por host (subdomínio)
-    // Domínio principal → site de apresentação
+    // Domínio principal → loja (index) — site de pedidos
     if ((host === 'padocadiskpizza.com.br' || host === 'www.padocadiskpizza.com.br') && (url.pathname === '/' || url.pathname === '')) {
-      return env.ASSETS.fetch(new Request(new URL('/site.html', url.origin), request));
-    }
-    // Subdomínio de pedidos → loja (index)
-    if (host === 'pedidos.padocadiskpizza.com.br' && (url.pathname === '/' || url.pathname === '')) {
       return env.ASSETS.fetch(new Request(new URL('/index.html', url.origin), request));
     }
     if (host === 'painel.padocadiskpizza.com.br' && (url.pathname === '/' || url.pathname === '')) {
@@ -251,6 +247,7 @@ export default {
     if (host === 'clientes.padocadiskpizza.com.br' && (url.pathname === '/' || url.pathname === '')) {
       return env.ASSETS.fetch(new Request(new URL('/clientes.html', url.origin), request));
     }
+    // Subdomínio de apresentação → site.html
     if (host === 'site.padocadiskpizza.com.br' && (url.pathname === '/' || url.pathname === '')) {
       return env.ASSETS.fetch(new Request(new URL('/site.html', url.origin), request));
     }
