@@ -1,7 +1,6 @@
 // ============================================================
 // PADOCA DISK PIZZAS - Cloudflare Pages Worker
-// Roteamento por host + API + persistência em memória
-// (Para persistência permanente, configure um KV namespace)
+// Roteamento por host + API + persistência em KV
 // ============================================================
 
 const CARDAPPIO = [
@@ -48,30 +47,39 @@ function chaveCliente(o) {
   return `${String(o.nome || '').trim().toLowerCase()}|${String(o.telefone || '').replace(/\D/g, '')}`;
 }
 
-// Armazenamento em memória (global, persiste entre invocações no mesmo isolate)
-const MEMORIA = {
-  siteOnline: true,
-  promocao: "Ganhe uma bebida na compra de duas pizzas inteiras!",
-  indisponiveis: [],
-  pedidos: [],
-  proximoId: 1,
-  pushSubs: []
-};
+// KV helpers
+async function kvGet(env, key, fallback) {
+  try {
+    if (env.PADOCA_KV) {
+      const v = await env.PADOCA_KV.get(key, 'json');
+      return v == null ? fallback : v;
+    }
+  } catch (e) {}
+  return fallback;
+}
 
-async function getSiteOnline() { return MEMORIA.siteOnline; }
-async function setSiteOnline(v) { MEMORIA.siteOnline = !!v; }
+async function kvSet(env, key, value) {
+  try {
+    if (env.PADOCA_KV) {
+      await env.PADOCA_KV.put(key, JSON.stringify(value));
+    }
+  } catch (e) {}
+}
 
-async function getPromocao() { return MEMORIA.promocao; }
-async function setPromocao(t) { MEMORIA.promocao = t; }
+async function getSiteOnline(env) { const v = await kvGet(env, 'siteOnline', null); return v == null ? true : !!v; }
+async function setSiteOnline(env, v) { await kvSet(env, 'siteOnline', !!v); }
 
-async function getIndisponiveis() { return MEMORIA.indisponiveis; }
-async function setIndisponiveis(v) { MEMORIA.indisponiveis = v; }
+async function getPromocao(env) { const v = await kvGet(env, 'promocao', null); return v == null ? "Ganhe uma bebida na compra de duas pizzas inteiras!" : v; }
+async function setPromocao(env, t) { await kvSet(env, 'promocao', t); }
 
-async function getPedidosData() { return { pedidos: MEMORIA.pedidos, proximoId: MEMORIA.proximoId }; }
-async function setPedidosData(v) { MEMORIA.pedidos = v.pedidos; MEMORIA.proximoId = v.proximoId; }
+async function getIndisponiveis(env) { const v = await kvGet(env, 'indisponiveis', null); return Array.isArray(v) ? v : []; }
+async function setIndisponiveis(env, v) { await kvSet(env, 'indisponiveis', v); }
 
-async function getPushSubs() { return MEMORIA.pushSubs; }
-async function setPushSubs(v) { MEMORIA.pushSubs = v; }
+async function getPedidosData(env) { const v = await kvGet(env, 'pedidos', null); if (v && Array.isArray(v.pedidos)) return v; return { pedidos: [], proximoId: 1 }; }
+async function setPedidosData(env, v) { await kvSet(env, 'pedidos', v); }
+
+async function getPushSubs(env) { const v = await kvGet(env, 'pushSubs', null); return Array.isArray(v) ? v : []; }
+async function setPushSubs(env, v) { await kvSet(env, 'pushSubs', v); }
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -80,7 +88,7 @@ function json(data, status = 200) {
   });
 }
 
-async function handleAPI(request) {
+async function handleAPI(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
   const method = request.method;
@@ -92,18 +100,18 @@ async function handleAPI(request) {
   const getBody = async () => { try { return await request.json(); } catch (e) { return {}; } };
 
   // STATUS
-  if (path === '/api/status' && method === 'GET') return json({ online: await getSiteOnline() });
+  if (path === '/api/status' && method === 'GET') return json({ online: await getSiteOnline(env) });
   if (path === '/api/status' && method === 'POST') {
     const b = await getBody();
-    await setSiteOnline(!!b.online);
+    await setSiteOnline(env, !!b.online);
     return json({ success: true });
   }
 
   // PROMOÇÃO
-  if (path === '/api/promocao' && method === 'GET') return json({ texto: await getPromocao() });
+  if (path === '/api/promocao' && method === 'GET') return json({ texto: await getPromocao(env) });
   if (path === '/api/promocao' && method === 'POST') {
     const b = await getBody();
-    await setPromocao(sanitizar(b.texto || ''));
+    await setPromocao(env, sanitizar(b.texto || ''));
     return json({ success: true });
   }
 
@@ -111,15 +119,15 @@ async function handleAPI(request) {
   if (path === '/api/cardapio' && method === 'GET') return json(CARDAPPIO);
 
   // INDISPONÍVEIS
-  if (path === '/api/indisponiveis' && method === 'GET') return json(await getIndisponiveis());
+  if (path === '/api/indisponiveis' && method === 'GET') return json(await getIndisponiveis(env));
   if (path === '/api/indisponiveis/alternar' && method === 'POST') {
     const b = await getBody();
     const id = parseInt(b.id);
     if (!id) return json({ error: 'id inválido' }, 400);
-    let lista = await getIndisponiveis();
+    let lista = await getIndisponiveis(env);
     if (lista.includes(id)) lista = lista.filter(i => i !== id);
     else lista.push(id);
-    await setIndisponiveis(lista);
+    await setIndisponiveis(env, lista);
     return json({ success: true, indisponiveis: lista });
   }
 
@@ -131,20 +139,20 @@ async function handleAPI(request) {
   }
   if (path === '/api/cadastro/excluir' && method === 'POST') {
     const b = await getBody();
-    const data = await getPedidosData();
+    const data = await getPedidosData(env);
     if (b.nome !== undefined || b.telefone !== undefined) {
       const chave = chaveCliente(b);
       data.pedidos = data.pedidos.filter(p => chaveCliente(p) !== chave);
     } else if (b.id) {
       data.pedidos = data.pedidos.filter(p => p.id !== parseInt(b.id));
     }
-    await setPedidosData(data);
+    await setPedidosData(env, data);
     return json({ success: true });
   }
 
   // PEDIDOS
   if (path === '/api/pedidos' && method === 'GET') {
-    const data = await getPedidosData();
+    const data = await getPedidosData(env);
     return json(data.pedidos);
   }
 
@@ -154,7 +162,7 @@ async function handleAPI(request) {
       i = i || {};
       return { tipo: i.tipo === 'metade' ? 'metade' : 'inteira', sabores: (Array.isArray(i.sabores) ? i.sabores : []).slice(0, 2).map(s => sanitizar(String(s))), preco: parseFloat(i.preco) || 0 };
     });
-    const data = await getPedidosData();
+    const data = await getPedidosData(env);
     const agora = new Date();
     const novoPedido = {
       id: data.proximoId++,
@@ -176,18 +184,18 @@ async function handleAPI(request) {
       criadoEm: agora.toISOString()
     };
     data.pedidos.push(novoPedido);
-    await setPedidosData(data);
+    await setPedidosData(env, data);
     return json({ success: true, pedidoId: novoPedido.id });
   }
 
   if (path === '/api/pedidos/status' && method === 'POST') {
     const b = await getBody();
-    const data = await getPedidosData();
+    const data = await getPedidosData(env);
     const pedido = data.pedidos.find(p => p.id === parseInt(b.id));
     if (pedido) {
       pedido.status = b.status;
       if (b.motivoRecusa) pedido.motivoRecusa = sanitizar(b.motivoRecusa);
-      await setPedidosData(data);
+      await setPedidosData(env, data);
       return json({ success: true });
     }
     return json({ error: 'Não encontrado.' }, 404);
@@ -196,7 +204,7 @@ async function handleAPI(request) {
   const statusMatch = path.match(/^\/api\/pedidos\/status\/(\d+)$/);
   if (statusMatch && method === 'GET') {
     const id = parseInt(statusMatch[1]);
-    const data = await getPedidosData();
+    const data = await getPedidosData(env);
     const pedido = data.pedidos.find(p => p.id === id);
     if (pedido) return json({ status: pedido.status, motivoRecusa: pedido.motivoRecusa || '' });
     return json({ status: 'concluido' });
@@ -204,11 +212,11 @@ async function handleAPI(request) {
 
   if (path === '/api/pedidos/concluir' && method === 'POST') {
     const b = await getBody();
-    const data = await getPedidosData();
+    const data = await getPedidosData(env);
     const pedido = data.pedidos.find(p => p.id === parseInt(b.id));
     if (pedido) {
       pedido.status = 'concluido';
-      await setPedidosData(data);
+      await setPedidosData(env, data);
       return json({ success: true });
     }
     return json({ error: 'Não encontrado.' }, 404);
@@ -216,8 +224,8 @@ async function handleAPI(request) {
 
   // DEBUG
   if (path === '/api/debug' && method === 'GET') {
-    const data = await getPedidosData();
-    return json({ ok: true, pedidos: data.pedidos.length, siteOnline: MEMORIA.siteOnline });
+    const data = await getPedidosData(env);
+    return json({ ok: true, pedidos: data.pedidos.length, hasKV: !!env.PADOCA_KV });
   }
 
   return json({ error: 'Rota não encontrada: ' + path }, 404);
@@ -254,10 +262,13 @@ export default {
     if (url.pathname === '/clientes') {
       return env.ASSETS.fetch(new Request(new URL('/clientes.html', url.origin), request));
     }
+    if (url.pathname === '/pedidos') {
+      return env.ASSETS.fetch(new Request(new URL('/index.html', url.origin), request));
+    }
 
     // API
     if (url.pathname.startsWith('/api/')) {
-      return handleAPI(request);
+      return handleAPI(request, env);
     }
 
     // Arquivos estáticos
