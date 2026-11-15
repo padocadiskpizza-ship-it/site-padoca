@@ -237,23 +237,33 @@ export default {
     const host = (url.hostname || '').toLowerCase();
     console.log('Worker fetch:', host, url.pathname);
 
-    // Roteamento por host (subdomínio)
+    // Roteamento por host (subdomínio) - captura qualquer path que comece com /
+    const isRoot = url.pathname === '/' || url.pathname === '' || url.pathname === '/index.html';
+
     // Domínio principal → site de apresentação
-    if ((host === 'padocadiskpizza.com.br' || host === 'www.padocadiskpizza.com.br') && (url.pathname === '/' || url.pathname === '')) {
-      const resp = await env.ASSETS.fetch(new Request(new URL('/site.html', url.origin), request));
+    if ((host === 'padocadiskpizza.com.br' || host === 'www.padocadiskpizza.com.br') && isRoot) {
+      const assetUrl = new URL('/site.html', url.origin);
+      const resp = await env.ASSETS.fetch(new Request(assetUrl, request));
+      console.log('Serving site.html for', host);
       return resp;
     }
     // Subdomínio site → loja (pedidos)
-    if (host === 'site.padocadiskpizza.com.br' && (url.pathname === '/' || url.pathname === '')) {
-      const resp = await env.ASSETS.fetch(new Request(new URL('/index.html', url.origin), request));
+    if (host === 'site.padocadiskpizza.com.br' && isRoot) {
+      const assetUrl = new URL('/index.html', url.origin);
+      const resp = await env.ASSETS.fetch(new Request(assetUrl, request));
+      console.log('Serving index.html for', host);
       return resp;
     }
-    if (host === 'painel.padocadiskpizza.com.br' && (url.pathname === '/' || url.pathname === '')) {
-      const resp = await env.ASSETS.fetch(new Request(new URL('/painel.html', url.origin), request));
+    if (host === 'painel.padocadiskpizza.com.br' && isRoot) {
+      const assetUrl = new URL('/painel.html', url.origin);
+      const resp = await env.ASSETS.fetch(new Request(assetUrl, request));
+      console.log('Serving painel.html for', host);
       return resp;
     }
-    if (host === 'clientes.padocadiskpizza.com.br' && (url.pathname === '/' || url.pathname === '')) {
-      const resp = await env.ASSETS.fetch(new Request(new URL('/clientes.html', url.origin), request));
+    if (host === 'clientes.padocadiskpizza.com.br' && isRoot) {
+      const assetUrl = new URL('/clientes.html', url.origin);
+      const resp = await env.ASSETS.fetch(new Request(assetUrl, request));
+      console.log('Serving clientes.html for', host);
       return resp;
     }
 
