@@ -235,21 +235,26 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const host = (url.hostname || '').toLowerCase();
+    console.log('Worker fetch:', host, url.pathname);
 
     // Roteamento por host (subdomínio)
     // Domínio principal → site de apresentação
     if ((host === 'padocadiskpizza.com.br' || host === 'www.padocadiskpizza.com.br') && (url.pathname === '/' || url.pathname === '')) {
-      return env.ASSETS.fetch(new Request(new URL('/site.html', url.origin), request));
+      const resp = await env.ASSETS.fetch(new Request(new URL('/site.html', url.origin), request));
+      return resp;
     }
     // Subdomínio site → loja (pedidos)
     if (host === 'site.padocadiskpizza.com.br' && (url.pathname === '/' || url.pathname === '')) {
-      return env.ASSETS.fetch(new Request(new URL('/index.html', url.origin), request));
+      const resp = await env.ASSETS.fetch(new Request(new URL('/index.html', url.origin), request));
+      return resp;
     }
     if (host === 'painel.padocadiskpizza.com.br' && (url.pathname === '/' || url.pathname === '')) {
-      return env.ASSETS.fetch(new Request(new URL('/painel.html', url.origin), request));
+      const resp = await env.ASSETS.fetch(new Request(new URL('/painel.html', url.origin), request));
+      return resp;
     }
     if (host === 'clientes.padocadiskpizza.com.br' && (url.pathname === '/' || url.pathname === '')) {
-      return env.ASSETS.fetch(new Request(new URL('/clientes.html', url.origin), request));
+      const resp = await env.ASSETS.fetch(new Request(new URL('/clientes.html', url.origin), request));
+      return resp;
     }
 
     // Paths curtos
